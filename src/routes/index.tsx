@@ -108,26 +108,63 @@ function App() {
 
 
 function ExerciseDemo({name}:{name:string}) {
-  const mode = /agachamento|afundo|passo lateral|marcha|joelhos/i.test(name) ? "squat"
-    : /flexão|prancha|superman|bird dog|dead bug|abdominal/i.test(name) ? "floor"
+  const mode = /afundo/i.test(name) ? "lunge"
+    : /agachamento|marcha|passo lateral|elevação alternada/i.test(name) ? "squat"
     : /ponte|elevação pélvica|coice|abdução/i.test(name) ? "bridge"
-    : /alongamento|mobilidade|respiração|aquecimento|círculos|gato/i.test(name) ? "stretch" : "squat";
-  const labels:Record<string,string> = {squat:"MOVIMENTO CONTROLADO",floor:"ESTABILIDADE E CONTROLE",bridge:"ATIVAÇÃO DE GLÚTEOS",stretch:"MOBILIDADE SUAVE"};
+    : /flexão|prancha|superman|bird dog|dead bug|abdominal/i.test(name) ? "floor"
+    : "stretch";
+  const labels:Record<string,string> = {squat:"FORÇA E CONTROLE",lunge:"PASSO FIRME E ESTÁVEL",floor:"ESTABILIDADE DO CORE",bridge:"ATIVAÇÃO DE GLÚTEOS",stretch:"MOBILIDADE SUAVE"};
+  const person = mode === "floor" ? <g className="figure figure-floor">
+    <path className="limb" d="M82 143 L118 143 L166 132 L215 132 L247 132"/>
+    <path className="limb" d="M116 141 L99 158 M166 132 L149 158"/>
+    <path className="limb" d="M215 132 L235 151 L260 151"/>
+    <path className="arm" d="M91 139 L76 157 L61 157"/>
+    <path className="torso" d="M112 116 Q157 103 207 116 L218 132 Q167 143 117 137 Z"/>
+    <path className="head" d="M96 112 Q82 105 87 91 Q93 78 107 83 Q119 89 112 104 L105 113 Z"/>
+    <path className="hair" d="M87 96 Q83 78 101 77 Q115 78 117 91 Q106 85 98 91 Z"/>
+    <path className="joint" d="M117 137 L117 137 M215 132 L215 132"/>
+  </g> : mode === "bridge" ? <g className="figure figure-bridge">
+    <path className="limb" d="M81 145 L115 145 L161 145"/>
+    <path className="limb" d="M191 118 L223 143 L255 143"/>
+    <path className="limb" d="M177 117 L205 142"/>
+    <path className="torso" d="M104 119 Q143 82 186 103 L202 119 Q151 130 111 138 Z"/>
+    <path className="head" d="M78 115 Q64 109 69 95 Q74 83 87 87 Q100 92 94 106 L88 116 Z"/>
+    <path className="hair" d="M69 99 Q66 82 82 81 Q95 81 99 94 Q88 88 78 94 Z"/>
+    <path className="arm" d="M102 126 L91 145 L78 145"/>
+  </g> : mode === "stretch" ? <g className="figure figure-stretch">
+    <path className="limb" d="M144 111 L119 137 L86 143 L54 143"/>
+    <path className="limb" d="M145 112 L174 136 L209 143 L241 143"/>
+    <path className="arm" d="M139 77 L111 103 L85 107"/>
+    <path className="arm" d="M151 77 L177 101 L202 102"/>
+    <path className="torso" d="M133 69 Q148 61 162 70 L171 112 L139 117 L127 91 Z"/>
+    <path className="head" d="M132 55 Q120 42 130 29 Q142 18 153 29 Q162 41 151 54 L146 62 Z"/>
+    <path className="hair" d="M127 42 Q122 22 142 20 Q158 22 159 39 Q148 31 138 36 Z"/>
+  </g> : <g className={`figure figure-${mode}`}>
+    <path className="limb back-leg" d="M145 119 L117 145 L105 159"/>
+    <path className="limb front-leg" d="M163 118 L190 144 L210 158"/>
+    <path className="arm" d="M139 73 L111 98 L101 119"/>
+    <path className="arm" d="M166 73 L191 97 L204 116"/>
+    <path className="torso" d="M137 62 Q153 54 169 63 L174 112 Q154 124 133 111 Z"/>
+    <path className="head" d="M139 43 Q126 29 137 16 Q150 5 162 17 Q171 30 160 43 L154 51 Z"/>
+    <path className="hair" d="M135 29 Q131 10 149 8 Q165 9 169 26 Q157 18 146 24 Z"/>
+  </g>;
   return <div className={`exercise-demo demo-${mode}`}>
-    <div className="demo-heading"><span className="demo-live"><i/> DEMONSTRAÇÃO</span><span>ILUSTRAÇÃO ANIMADA</span></div>
-    <svg className="demo-visual" viewBox="0 0 320 190" role="img" aria-label={`Ilustração demonstrativa de ${name}`}>
-      <ellipse cx="160" cy="163" rx="104" ry="10" className="demo-shadow"/>
-      <path d="M28 164 H292" className="demo-floor"/>
-      <g className="demo-motion-arrow"><path d="M260 55 Q285 75 263 96" /><path d="M254 88 L263 97 L272 88"/></g>
-      {mode === "floor" ? <g className="demo-person">
-        <circle cx="245" cy="91" r="13"/><path d="M228 103 L145 112 L93 112 M175 109 L151 148 L121 148 M190 107 L211 145 L241 145 M146 112 L124 137 L105 137"/>
-      </g> : mode === "bridge" ? <g className="demo-person">
-        <circle cx="70" cy="126" r="12"/><path d="M84 128 Q145 72 213 112 L246 145 M112 112 L99 148 L79 148 M212 112 L225 148 L250 148 M148 94 L132 68 L115 68"/>
-      </g> : <g className="demo-person">
-        <circle cx="160" cy="34" r="13"/><path d="M160 49 L160 99 M160 61 L128 84 L112 72 M160 61 L192 84 L207 72 M160 99 L132 132 L112 151 M160 99 L188 132 L210 151"/>
-      </g>}
-    </svg>
-    <div className="demo-footer"><strong>{labels[mode]}</strong><span>Observe a posição e acompanhe as instruções abaixo</span></div>
+    <div className="demo-heading"><span className="demo-live"><i/> DEMONSTRAÇÃO DO MOVIMENTO</span><span>GUIA VISUAL</span></div>
+    <div className="demo-stage">
+      <div className="demo-halo"/>
+      <svg className="demo-visual" viewBox="0 0 320 190" role="img" aria-label={`Ilustração de referência para ${name}`}>
+        <defs>
+          <linearGradient id="outfitPink" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stopColor="#ff8fc3"/><stop offset="1" stopColor="#d9438d"/></linearGradient>
+          <linearGradient id="skinTone" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stopColor="#ffd9c8"/><stop offset="1" stopColor="#eaa58f"/></linearGradient>
+        </defs>
+        <ellipse cx="158" cy="165" rx="112" ry="9" className="demo-shadow"/>
+        {mode === "floor" || mode === "bridge" ? <rect x="39" y="151" width="242" height="10" rx="5" className="demo-mat"/> : <path d="M25 165 H295" className="demo-ground"/>}
+        <g className="demo-motion-arrow"><path d="M264 48 Q289 68 266 91"/><path d="M257 83 L266 92 L275 83"/></g>
+        {person}
+      </svg>
+      <div className="demo-step-pill"><span>✦</span> MOVIMENTO EM FOCO</div>
+    </div>
+    <div className="demo-footer"><strong>{labels[mode]}</strong><span>Veja a posição ilustrada e siga o passo a passo abaixo</span></div>
   </div>;
 }
 
