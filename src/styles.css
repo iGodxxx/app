@@ -175,7 +175,7 @@
   --secondary-foreground:oklch(0.22 0.03 265);
   --muted:oklch(0.94 0.012 265);
   --muted-foreground:oklch(0.49 0.025 265);
-  --accent:oklch(0.91 0.12 125);
+  --accent:oklch(0.91 0.12 350);
   --accent-foreground:oklch(0.2 0.03 265);
   --border:oklch(0.88 0.018 265);
   --input:oklch(0.88 0.018 265);
@@ -186,17 +186,17 @@ body{font-family:Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,
 .app-shell{background:#f5f5f0}
 .sidebar{background:#202331;border-right:0;color:#fff;padding:30px 19px}
 .brand{color:#fff;font-size:16px;letter-spacing:-.7px}
-.brand-light{color:#d8ff45}
+.brand-light{color:#ff5ca8}
 .brand small{color:#a8adbb}
-.brand-mark{background:#ff623e;color:#fff;border-radius:13px;box-shadow:4px 4px 0 #d8ff45}
+.brand-mark{background:#ff623e;color:#fff;border-radius:13px;box-shadow:4px 4px 0 #ff5ca8}
 .side-label,.eyebrow{font-family:Inter,ui-sans-serif,sans-serif;font-size:9px;letter-spacing:2px;font-weight:850;color:#ef6548}
 .side-label{color:#9299aa;margin-top:52px}
 .side-link{color:#b6bbca;border-radius:10px;font-weight:650;transition:background .18s,color .18s}
 .side-link:hover{background:#303648;color:#fff}
-.side-link.selected{background:#ff623e;color:#fff;box-shadow:4px 4px 0 #d8ff45}
-.side-count{background:#d8ff45;color:#202331}
-.side-quote{background:#2b3040;border:1px solid #41485b;color:#d8ffb0;border-radius:12px;font-family:Inter,ui-sans-serif,sans-serif;font-style:normal;font-size:11px;font-weight:600}
-.profile-mini strong{color:#fff}.profile-mini small{color:#a8adbb}.avatar{background:#d8ff45;color:#202331}
+.side-link.selected{background:#ff623e;color:#fff;box-shadow:4px 4px 0 #ff5ca8}
+.side-count{background:#ff5ca8;color:#202331}
+.side-quote{background:#2b3040;border:1px solid #41485b;color:#ffc3df;border-radius:12px;font-family:Inter,ui-sans-serif,sans-serif;font-style:normal;font-size:11px;font-weight:600}
+.profile-mini strong{color:#fff}.profile-mini small{color:#a8adbb}.avatar{background:#ff5ca8;color:#202331}
 .main-area{background:#f5f5f0}
 .topbar{background:#fdfdf9;border-bottom:1px solid #e7e8e1}
 .breadcrumb{color:#777d8d;font-weight:600}
@@ -210,18 +210,18 @@ body{font-family:Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,
 .welcome-row h1 em{font-style:normal;color:#ff623e}
 .welcome-row p,.page-heading p{color:#737989;font-size:13px}
 .welcome-flower{display:none}
-.hero-card{min-height:300px;border-radius:18px;background:#202331;color:#fff;box-shadow:8px 8px 0 #d8ff45}
+.hero-card{min-height:300px;border-radius:18px;background:#202331;color:#fff;box-shadow:8px 8px 0 #ff5ca8}
 .hero-card:after{content:"";position:absolute;width:290px;height:290px;border:42px solid #ff623e;border-radius:50%;right:9%;top:35px;opacity:.92}
 .hero-copy{padding:40px 42px;max-width:62%}
-.hero-tag{color:#d8ff45;font-size:9px;letter-spacing:2px}
+.hero-tag{color:#ff5ca8;font-size:9px;letter-spacing:2px}
 .hero-copy h2{font-family:Inter,ui-sans-serif,sans-serif;font-weight:900;font-size:clamp(30px,3.5vw,43px);letter-spacing:-1.8px;line-height:1.02;color:#fff;margin:18px 0 12px}
 .hero-copy p{color:#c1c5d0;font-size:12px;max-width:340px}
 .hero-illustration{z-index:1;right:3%;width:38%}
-.sun-disc{width:180px;height:180px;background:#d8ff45;right:15%;top:55px;opacity:1}
+.sun-disc{width:180px;height:180px;background:#ff5ca8;right:15%;top:55px;opacity:1}
 .hero-person{font-family:Inter,ui-sans-serif,sans-serif;font-weight:900;font-size:165px;color:#ff623e;opacity:1;transform:rotate(-10deg)}
 .hero-caption{color:#fff;font-weight:800}
 .button-light,.button-primary,.button-secondary{border-radius:9px;font-size:11px;font-weight:850;text-transform:uppercase;letter-spacing:.4px}
-.button-light{background:#d8ff45;color:#202331}
+.button-light{background:#ff5ca8;color:#202331}
 .button-primary{background:#ff623e;color:#fff;box-shadow:3px 3px 0 #202331}
 .button-primary:hover{filter:brightness(1.04);transform:translate(-1px,-1px);box-shadow:5px 5px 0 #202331}
 .button-secondary{background:#e9ebdf;color:#34394a}
@@ -235,7 +235,7 @@ body{font-family:Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,
 .text-link,.card-action{color:#f05b3a;font-weight:850;text-transform:uppercase;letter-spacing:.3px}
 .workout-grid{gap:17px}
 .workout-card{border:1px solid #e5e6de;border-radius:14px;background:#fff;box-shadow:3px 3px 0 #e1e3d8}
-.workout-card:hover{transform:translateY(-4px);box-shadow:6px 8px 0 #d8ff45}
+.workout-card:hover{transform:translateY(-4px);box-shadow:6px 8px 0 #ff5ca8}
 .workout-art{height:155px;padding:16px}
 .workout-art>span{background:#202331;color:#fff;border-radius:5px;font-size:8px;font-weight:850;text-transform:uppercase;letter-spacing:1px}
 .workout-art.peach{background:linear-gradient(135deg,#ffb29c,#ff623e)}
@@ -247,50 +247,50 @@ body{font-family:Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,
 .workout-meta{color:#7c8290;font-weight:700}
 .workout-info h3{font-family:Inter,ui-sans-serif,sans-serif;font-weight:850;font-size:16px;letter-spacing:-.4px;color:#202331}
 .workout-info p{color:#777d8d}
-.bottom-note{background:#d8ff45;color:#202331;border-radius:10px;font-weight:800}
+.bottom-note{background:#ff5ca8;color:#202331;border-radius:10px;font-weight:800}
 .bottom-note svg{color:#202331}
-.note-right{color:#444d32;font-weight:850}
+.note-right{color:#6b2948;font-weight:850}
 .page-heading{margin-bottom:27px}
 .page-heading h1{font-size:clamp(32px,4vw,44px)}
 .search-box{border:1px solid #dfe1d8;background:#fff;border-radius:10px;color:#ff623e}
 .search-box input{color:#202331}
 .filter-pills span{border:1px solid #e1e3d9;background:#fff;color:#737989;border-radius:6px;font-weight:700}
-.filter-pills .filter-active{background:#202331;border-color:#202331;color:#d8ff45}
+.filter-pills .filter-active{background:#202331;border-color:#202331;color:#ff5ca8}
 .goal-card{border:1px solid #e4e5dc;border-radius:12px;background:#fff;color:#202331;box-shadow:3px 3px 0 #e1e3d8}
 .goal-card:hover,.goal-selected{border-color:#ff623e;background:#fff8f4}
 .goal-card strong{font-family:Inter,ui-sans-serif,sans-serif;font-weight:850}
-.goal-symbol{border-radius:9px;background:#d8ff45;color:#202331;font-weight:900}
+.goal-symbol{border-radius:9px;background:#ff5ca8;color:#202331;font-weight:900}
 .challenge-card{background:#202331;border:0;border-radius:14px;color:#fff}
-.challenge-icon{background:#d8ff45;color:#202331;border-radius:10px}
+.challenge-icon{background:#ff5ca8;color:#202331;border-radius:10px}
 .challenge-card h3{font-family:Inter,ui-sans-serif,sans-serif;font-weight:900;color:#fff}
 .challenge-card p{color:#c1c5d0}
 .challenge-days span{background:#353b4e;border-color:#50576a;color:#fff}
-.challenge-days .day-done{background:#d8ff45;border-color:#d8ff45;color:#202331}
+.challenge-days .day-done{background:#ff5ca8;border-color:#ff5ca8;color:#202331}
 .challenge-days .day-current{border-color:#ff623e;color:#ffb09c}
 .progress-panel,.profile-card,.settings-list{background:#fff;border:1px solid #e4e5dc;border-radius:13px;box-shadow:3px 3px 0 #e1e3d8}
 .history-row{border-color:#eceee7}
-.history-check{background:#d8ff45;color:#202331}
+.history-check{background:#ff5ca8;color:#202331}
 .history-row strong{color:#202331}
 .history-row small,.history-date{color:#7b8190}
 .gentle-reminder{color:#e95d3e;font-weight:750}
 .profile-avatar{background:#ff623e;color:#fff}
 .profile-card h2{font-family:Inter,ui-sans-serif,sans-serif;font-weight:900;color:#202331}
 .profile-card p,.setting-row small{color:#777d8d}
-.profile-badge{background:#d8ff45;color:#202331;font-weight:850}
+.profile-badge{background:#ff5ca8;color:#202331;font-weight:850}
 .setting-row{border-color:#eceee7}
 .setting-row strong{color:#202331}
 .setting-row button{color:#ed5d3d;font-weight:800}
-.privacy-note{background:#eef4d8;color:#48512e;border-radius:10px;font-weight:650}
-.mobile-nav{background:#202331;border:0;box-shadow:0 -4px 0 #d8ff45}
+.privacy-note{background:#fff0f6;color:#48512e;border-radius:10px;font-weight:650}
+.mobile-nav{background:#202331;border:0;box-shadow:0 -4px 0 #ff5ca8}
 .mobile-link{color:#aeb4c3;font-weight:650}
-.mobile-link.active{color:#d8ff45}
+.mobile-link.active{color:#ff5ca8}
 .modal-backdrop{background:#171a25c9}
 .workout-modal,.settings-modal{background:#fbfcf6;border-radius:16px;border:1px solid #e4e5dc}
 .workout-modal h2,.settings-modal h2{font-family:Inter,ui-sans-serif,sans-serif;font-weight:900;color:#202331;letter-spacing:-.8px}
 .workout-progress{background:#e6e8de}
 .workout-progress span{background:#ff623e}
 .exercise-count{color:#f05b3a;font-weight:900}
-.exercise-orbit{background:#d8ff45;color:#202331;box-shadow:0 0 0 12px #eff6d8,0 0 0 24px #f6f8ec}
+.exercise-orbit{background:#ff5ca8;color:#202331;box-shadow:0 0 0 12px #eff6d8,0 0 0 24px #f6f8ec}
 .tip-box{background:#edf3dc;color:#56613a}
 .tip-box strong{color:#303a20}
 .exercise-prescription>span{background:#fff;border-color:#e5e7dd}
@@ -298,8 +298,8 @@ body{font-family:Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,
 .exercise-prescription small{color:#777d8d}
 .settings-modal>label{color:#34394a;font-weight:850}
 .choice{border:1px solid #dfe1d8;background:#fff;color:#737989;border-radius:7px;font-weight:700}
-.choice.chosen{background:#d8ff45;border-color:#b6db2e;color:#202331}
-.empty-icon{background:#d8ff45;color:#202331;border-radius:12px}
+.choice.chosen{background:#ff5ca8;border-color:#e83f8d;color:#202331}
+.empty-icon{background:#ff5ca8;color:#202331;border-radius:12px}
 .empty-state h3{font-family:Inter,ui-sans-serif,sans-serif;font-weight:900;color:#202331}
 @media(max-width:700px){
   .sidebar{display:none}
@@ -308,7 +308,7 @@ body{font-family:Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,
   .content{padding:28px 18px 92px}
   .welcome-row{margin-bottom:22px}
   .welcome-row h1{font-size:32px}
-  .hero-card{min-height:330px;box-shadow:5px 5px 0 #d8ff45}
+  .hero-card{min-height:330px;box-shadow:5px 5px 0 #ff5ca8}
   .hero-copy{padding:28px 23px;max-width:100%;width:100%}
   .hero-copy h2{font-size:34px;max-width:270px}
   .hero-copy p{max-width:245px}
