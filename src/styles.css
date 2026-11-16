@@ -373,32 +373,42 @@ body{font-family:Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,
   .hero-card:after{border-color:#f7a8ce}
 }
 
-/* Demonstração visual animada dos exercícios */
-.exercise-demo{position:relative;overflow:hidden;margin:14px 0 18px;padding:13px 15px 11px;border:1px solid #f0d8e5;border-radius:16px;background:radial-gradient(circle at 50% 45%,#fff 0,#fff5fa 72%);min-height:210px}
+/* Ilustrações refinadas para o treino guiado */
+.exercise-demo{position:relative;overflow:hidden;margin:14px 0 18px;padding:13px 15px 12px;border:1px solid #f0d8e5;border-radius:18px;background:linear-gradient(145deg,#fff 0%,#fff5fa 58%,#fce8f1 100%);min-height:254px;box-shadow:0 8px 24px rgba(112,43,80,.06)}
 .demo-heading,.demo-footer{display:flex;align-items:center;justify-content:space-between;gap:8px}
-.demo-heading{font-size:8px;letter-spacing:1.2px;font-weight:850;color:#a17b8d}
-.demo-live{display:flex;align-items:center;gap:6px;color:#d94d91}
+.demo-heading{font-size:8px;letter-spacing:1.1px;font-weight:850;color:#a17b8d}
+.demo-live{display:flex;align-items:center;gap:7px;color:#c83e83}
 .demo-live i{width:7px;height:7px;border-radius:50%;background:#e94b98;box-shadow:0 0 0 4px #f9dce9;animation:demo-pulse 1.6s infinite}
-.demo-visual{display:block;width:100%;height:145px;max-width:360px;margin:0 auto}
-.demo-shadow{fill:#f2dce7}
-.demo-floor{fill:none;stroke:#e8cbd9;stroke-width:2;stroke-linecap:round;stroke-dasharray:4 7;animation:demo-floor 4s linear infinite}
-.demo-person{fill:none;stroke:#743b59;stroke-width:8;stroke-linecap:round;stroke-linejoin:round;transform-origin:50% 70%;animation:demo-breathe 2.8s ease-in-out infinite}
-.demo-person circle{fill:#ffb5d5;stroke:#743b59;stroke-width:5}
-.demo-motion-arrow{fill:none;stroke:#e94b98;stroke-width:3;stroke-linecap:round;stroke-linejoin:round;stroke-dasharray:5 5;animation:demo-arrow 1.5s linear infinite}
-.demo-footer{justify-content:center;flex-direction:column;gap:3px;padding-bottom:2px;text-align:center}
+.demo-stage{position:relative;height:177px;margin-top:3px;display:flex;align-items:center;justify-content:center}
+.demo-halo{position:absolute;width:156px;height:140px;border-radius:50%;background:radial-gradient(circle,#ffe0ed 0%,rgba(255,224,237,.3) 68%,transparent 70%);animation:halo-breathe 3s ease-in-out infinite}
+.demo-visual{position:relative;z-index:1;display:block;width:100%;height:177px;max-width:370px;overflow:visible}
+.demo-shadow{fill:#e9cbd9;opacity:.8}
+.demo-ground{stroke:#e8cbd9;stroke-width:2;stroke-linecap:round;stroke-dasharray:4 7}
+.demo-mat{fill:#f5c6dc;stroke:#eaa6c7;stroke-width:1}
+.figure{transform-box:fill-box;transform-origin:center bottom}
+.figure .limb,.figure .arm{fill:none;stroke:url(#skinTone);stroke-width:11;stroke-linecap:round;stroke-linejoin:round}
+.figure .limb{stroke-width:12}
+.figure .torso{fill:url(#outfitPink);stroke:#a93670;stroke-width:1.5;stroke-linejoin:round}
+.figure .head{fill:url(#skinTone);stroke:#c98175;stroke-width:1}
+.figure .hair{fill:#493044;stroke:#493044;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.figure-floor{animation:floor-rock 2.8s ease-in-out infinite}
+.figure-bridge{animation:bridge-lift 2.5s ease-in-out infinite}
+.figure-stretch{animation:stretch-sway 3.2s ease-in-out infinite}
+.figure-squat{animation:squat-lower 2.6s ease-in-out infinite}
+.figure-lunge{animation:lunge-shift 2.8s ease-in-out infinite}
+.demo-motion-arrow{fill:none;stroke:#e94b98;stroke-width:3;stroke-linecap:round;stroke-linejoin:round;stroke-dasharray:5 6;animation:demo-arrow 1.4s linear infinite}
+.demo-step-pill{position:absolute;z-index:2;right:7px;bottom:8px;padding:6px 9px;border:1px solid #f4d2e2;border-radius:20px;background:rgba(255,255,255,.88);font-size:7px;font-weight:850;letter-spacing:.7px;color:#a54878;box-shadow:0 3px 10px rgba(112,43,80,.06)}
+.demo-step-pill span{color:#e94b98}
+.demo-footer{justify-content:center;flex-direction:column;gap:4px;text-align:center}
 .demo-footer strong{font-size:9px;letter-spacing:1.1px;color:#c83e83}
 .demo-footer span{font-size:9px;color:#9c8491}
-.demo-squat .demo-person{animation:demo-squat 2.4s ease-in-out infinite}
-.demo-floor .demo-person{animation:demo-floor-move 2.2s ease-in-out infinite}
-.demo-bridge .demo-person{animation:demo-bridge 2.4s ease-in-out infinite}
-.demo-stretch .demo-person{animation:demo-stretch 3s ease-in-out infinite}
 @keyframes demo-pulse{50%{box-shadow:0 0 0 7px #f9dce9;opacity:.65}}
-@keyframes demo-breathe{50%{transform:translateY(-3px)}}
-@keyframes demo-squat{0%,100%{transform:translateY(0) scaleY(1)}50%{transform:translateY(12px) scaleY(.9)}}
-@keyframes demo-floor-move{0%,100%{transform:translateY(0)}50%{transform:translateY(5px)}}
-@keyframes demo-bridge{0%,100%{transform:translateY(5px)}50%{transform:translateY(-8px)}}
-@keyframes demo-stretch{0%,100%{transform:rotate(-3deg)}50%{transform:rotate(4deg)}}
-@keyframes demo-arrow{to{stroke-dashoffset:-20}}
-@keyframes demo-floor{to{stroke-dashoffset:-22}}
-@media(prefers-reduced-motion:reduce){.demo-person,.demo-motion-arrow,.demo-live i,.demo-floor{animation:none}}
-@media(max-width:700px){.exercise-demo{min-height:195px;margin:10px 0 15px;padding:12px}.demo-visual{height:130px}}
+@keyframes demo-arrow{to{stroke-dashoffset:-22}}
+@keyframes halo-breathe{50%{transform:scale(1.08);opacity:.72}}
+@keyframes squat-lower{0%,100%{transform:translateY(0) scaleY(1)}50%{transform:translateY(5px) scaleY(.96)}}
+@keyframes lunge-shift{0%,100%{transform:translateX(0)}50%{transform:translateX(5px)}}
+@keyframes floor-rock{0%,100%{transform:translateY(0)}50%{transform:translateY(-3px)}}
+@keyframes bridge-lift{0%,100%{transform:translateY(5px)}50%{transform:translateY(-7px)}}
+@keyframes stretch-sway{0%,100%{transform:rotate(-2deg)}50%{transform:rotate(2deg)}}
+@media(prefers-reduced-motion:reduce){.figure,.demo-motion-arrow,.demo-live i,.demo-halo{animation:none}}
+@media(max-width:700px){.exercise-demo{min-height:238px;margin:10px 0 15px;padding:12px}.demo-stage{height:163px}.demo-visual{height:163px}}
