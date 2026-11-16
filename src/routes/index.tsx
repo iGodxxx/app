@@ -100,10 +100,35 @@ function App() {
         </div>
       </main>
       <nav className="mobile-nav">{nav.map(({label, icon: Icon}) => <button key={label} className={tab === label ? "mobile-link active" : "mobile-link"} onClick={() => setTab(label)}><Icon size={19}/><span>{label}</span></button>)}</nav>
-      {active && <div className="modal-backdrop"><section className="workout-modal"><div className="modal-head"><span className="eyebrow">SEU TREINO GUIADO</span><button className="icon-button" onClick={() => setActive(null)} aria-label="Fechar"><X size={20}/></button></div><div className="workout-progress"><span style={{width: ((step + 1) / active.exercises.length * 100) + "%"}}/></div><div className="exercise-count">EXERCÍCIO {step + 1} DE {active.exercises.length}</div><div className="exercise-art"><div className="exercise-orbit"><Activity size={58}/></div></div><h2>{active.exercises[step]}</h2><p className="muted">{exerciseGuidance(active.exercises[step])}</p><p className="safety-hint">Respeite seus limites. Interrompa se sentir dor, tontura ou mal-estar.</p><div className="tip-box"><Sparkles size={18}/><span><strong>Como executar</strong> {exerciseGuidance(active.exercises[step])}<br/><strong>Respiração</strong> Solte o ar durante o esforço e inspire no retorno, sem prender a respiração.</span></div><div className="exercise-prescription"><span><strong>2–3</strong><small>séries</small></span><span><strong>8–12</strong><small>repetições</small></span><span><strong>45s</strong><small>descanso</small></span></div><div className="modal-actions"><button className="button-secondary" onClick={() => setStep(Math.max(0, step - 1))} disabled={step === 0}>Anterior</button>{step < active.exercises.length - 1 ? <button className="button-primary" onClick={() => setStep(step + 1)}>Próximo exercício <ArrowRight size={17}/></button> : <button className="button-primary" onClick={finish}><Check size={17}/> Concluir treino</button>}</div></section></div>}
+      {active && <div className="modal-backdrop"><section className="workout-modal"><div className="modal-head"><span className="eyebrow">SEU TREINO GUIADO</span><button className="icon-button" onClick={() => setActive(null)} aria-label="Fechar"><X size={20}/></button></div><div className="workout-progress"><span style={{width: ((step + 1) / active.exercises.length * 100) + "%"}}/></div><div className="exercise-count">EXERCÍCIO {step + 1} DE {active.exercises.length}</div><ExerciseDemo name={active.exercises[step]} /><h2>{active.exercises[step]}</h2><p className="muted">{exerciseGuidance(active.exercises[step])}</p><p className="safety-hint">Respeite seus limites. Interrompa se sentir dor, tontura ou mal-estar.</p><div className="tip-box"><Sparkles size={18}/><span><strong>Como executar</strong> {exerciseGuidance(active.exercises[step])}<br/><strong>Respiração</strong> Solte o ar durante o esforço e inspire no retorno, sem prender a respiração.</span></div><div className="exercise-prescription"><span><strong>2–3</strong><small>séries</small></span><span><strong>8–12</strong><small>repetições</small></span><span><strong>45s</strong><small>descanso</small></span></div><div className="modal-actions"><button className="button-secondary" onClick={() => setStep(Math.max(0, step - 1))} disabled={step === 0}>Anterior</button>{step < active.exercises.length - 1 ? <button className="button-primary" onClick={() => setStep(step + 1)}>Próximo exercício <ArrowRight size={17}/></button> : <button className="button-primary" onClick={finish}><Check size={17}/> Concluir treino</button>}</div></section></div>}
       {onboarding && <div className="modal-backdrop"><section className="settings-modal"><div className="modal-head"><span className="eyebrow">AJUSTE SUA JORNADA</span><button className="icon-button" onClick={() => setOnboarding(false)}><X size={20}/></button></div><h2>Seu plano, seu ritmo.</h2><p className="muted">Personalize suas preferências de treino.</p><label>Seu objetivo</label><div className="choice-grid">{["Perder peso","Ganhar massa","Definição","Fortalecimento","Mobilidade"].map(x=><button className={goal===x?"choice chosen":"choice"} onClick={()=>setGoal(x)} key={x}>{x}</button>)}</div><label>Nível atual</label><div className="choice-grid">{["Iniciante","Intermediário","Avançado"].map(x=><button className={level===x?"choice chosen":"choice"} onClick={()=>setLevel(x)} key={x}>{x}</button>)}</div><label>Disponibilidade semanal</label><div className="choice-grid">{["2 dias","3 dias","4 dias","5 dias"].map(x=><button className={days===x?"choice chosen":"choice"} onClick={()=>setDays(x)} key={x}>{x}</button>)}</div><button className="button-primary full" onClick={()=>setOnboarding(false)}>Salvar preferências <Check size={17}/></button></section></div>}
     </div>
   );
+}
+
+
+function ExerciseDemo({name}:{name:string}) {
+  const mode = /agachamento|afundo|passo lateral|marcha|joelhos/i.test(name) ? "squat"
+    : /flexão|prancha|superman|bird dog|dead bug|abdominal/i.test(name) ? "floor"
+    : /ponte|elevação pélvica|coice|abdução/i.test(name) ? "bridge"
+    : /alongamento|mobilidade|respiração|aquecimento|círculos|gato/i.test(name) ? "stretch" : "squat";
+  const labels:Record<string,string> = {squat:"MOVIMENTO CONTROLADO",floor:"ESTABILIDADE E CONTROLE",bridge:"ATIVAÇÃO DE GLÚTEOS",stretch:"MOBILIDADE SUAVE"};
+  return <div className={`exercise-demo demo-${mode}`}>
+    <div className="demo-heading"><span className="demo-live"><i/> DEMONSTRAÇÃO</span><span>ILUSTRAÇÃO ANIMADA</span></div>
+    <svg className="demo-visual" viewBox="0 0 320 190" role="img" aria-label={`Ilustração demonstrativa de ${name}`}>
+      <ellipse cx="160" cy="163" rx="104" ry="10" className="demo-shadow"/>
+      <path d="M28 164 H292" className="demo-floor"/>
+      <g className="demo-motion-arrow"><path d="M260 55 Q285 75 263 96" /><path d="M254 88 L263 97 L272 88"/></g>
+      {mode === "floor" ? <g className="demo-person">
+        <circle cx="245" cy="91" r="13"/><path d="M228 103 L145 112 L93 112 M175 109 L151 148 L121 148 M190 107 L211 145 L241 145 M146 112 L124 137 L105 137"/>
+      </g> : mode === "bridge" ? <g className="demo-person">
+        <circle cx="70" cy="126" r="12"/><path d="M84 128 Q145 72 213 112 L246 145 M112 112 L99 148 L79 148 M212 112 L225 148 L250 148 M148 94 L132 68 L115 68"/>
+      </g> : <g className="demo-person">
+        <circle cx="160" cy="34" r="13"/><path d="M160 49 L160 99 M160 61 L128 84 L112 72 M160 61 L192 84 L207 72 M160 99 L132 132 L112 151 M160 99 L188 132 L210 151"/>
+      </g>}
+    </svg>
+    <div className="demo-footer"><strong>{labels[mode]}</strong><span>Observe a posição e acompanhe as instruções abaixo</span></div>
+  </div>;
 }
 
 function exerciseGuidance(name: string) {
