@@ -412,3 +412,38 @@ body{font-family:Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,
 @keyframes stretch-sway{0%,100%{transform:rotate(-2deg)}50%{transform:rotate(2deg)}}
 @media(prefers-reduced-motion:reduce){.figure,.demo-motion-arrow,.demo-live i,.demo-halo{animation:none}}
 @media(max-width:700px){.exercise-demo{min-height:238px;margin:10px 0 15px;padding:12px}.demo-stage{height:163px}.demo-visual{height:163px}}
+
+/* Refinamento por exercício: silhuetas e ciclos de movimento específicos */
+.exercise-demo{min-height:264px;background:linear-gradient(145deg,#fff 0%,#fff7fb 52%,#f8e4ef 100%);border-color:#efd2e1;box-shadow:0 12px 30px rgba(112,43,80,.08)}
+.demo-stage{height:184px}
+.demo-visual{height:184px}
+.figure .limb,.figure .arm{stroke:#e6a58f;stroke-width:12;stroke-linecap:round;stroke-linejoin:round;fill:none}
+.figure .arm{stroke-width:10}
+.figure .torso{fill:url(#outfitPink);stroke:#a93670;stroke-width:1.5;stroke-linejoin:round}
+.figure .head{fill:url(#skinTone);stroke:#c98175;stroke-width:1}
+.figure .hair{fill:#493044;stroke:#493044;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.figure-pushup{animation:pushup-cycle 3s ease-in-out infinite}
+.figure-plank{animation:plank-breathe 3.2s ease-in-out infinite}
+.figure-deadbug{animation:deadbug-cycle 3.4s ease-in-out infinite}
+.figure-birddog{animation:birddog-cycle 3.2s ease-in-out infinite}
+.figure-superman{animation:superman-cycle 3s ease-in-out infinite}
+.figure-crunch{animation:crunch-cycle 2.8s ease-in-out infinite}
+.figure-bridge{animation:bridge-lift 2.7s ease-in-out infinite}
+.figure-kick{animation:kick-cycle 2.8s ease-in-out infinite}
+.figure-sideleg{animation:sideleg-cycle 2.8s ease-in-out infinite}
+.figure-squat{animation:squat-lower 2.8s ease-in-out infinite}
+.figure-lunge{animation:lunge-shift 3s ease-in-out infinite}
+.figure-march{animation:march-cycle 1.8s ease-in-out infinite}
+.figure-mobility{animation:stretch-sway 3.2s ease-in-out infinite}
+.demo-step-pill{bottom:5px;right:4px;letter-spacing:.45px}
+.demo-footer{padding-top:2px}
+@keyframes pushup-cycle{0%,100%{transform:translateY(0)}50%{transform:translateY(5px)}}
+@keyframes plank-breathe{0%,100%{transform:translateY(0)}50%{transform:translateY(-1.5px)}}
+@keyframes deadbug-cycle{0%,100%{transform:rotate(0)}50%{transform:rotate(-2deg)}}
+@keyframes birddog-cycle{0%,100%{transform:translateX(0)}50%{transform:translateX(3px)}}
+@keyframes superman-cycle{0%,100%{transform:translateY(2px)}50%{transform:translateY(-5px)}}
+@keyframes crunch-cycle{0%,100%{transform:translateY(0) rotate(0)}50%{transform:translateY(-4px) rotate(-2deg)}}
+@keyframes kick-cycle{0%,100%{transform:translateY(0)}50%{transform:translateY(-4px) translateX(4px)}}
+@keyframes sideleg-cycle{0%,100%{transform:translateX(0)}50%{transform:translateX(5px)}}
+@keyframes march-cycle{0%,100%{transform:translateY(0)}50%{transform:translateY(-4px)}}
+@media(max-width:700px){.exercise-demo{min-height:247px}.demo-stage{height:170px}.demo-visual{height:170px}}
