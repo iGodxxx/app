@@ -108,63 +108,92 @@ function App() {
 
 
 function ExerciseDemo({name}:{name:string}) {
-  const mode = /afundo/i.test(name) ? "lunge"
-    : /agachamento|marcha|passo lateral|elevação alternada/i.test(name) ? "squat"
-    : /ponte|elevação pélvica|coice|abdução/i.test(name) ? "bridge"
-    : /flexão|prancha|superman|bird dog|dead bug|abdominal/i.test(name) ? "floor"
-    : "stretch";
-  const labels:Record<string,string> = {squat:"FORÇA E CONTROLE",lunge:"PASSO FIRME E ESTÁVEL",floor:"ESTABILIDADE DO CORE",bridge:"ATIVAÇÃO DE GLÚTEOS",stretch:"MOBILIDADE SUAVE"};
-  const person = mode === "floor" ? <g className="figure figure-floor">
-    <path className="limb" d="M82 143 L118 143 L166 132 L215 132 L247 132"/>
-    <path className="limb" d="M116 141 L99 158 M166 132 L149 158"/>
-    <path className="limb" d="M215 132 L235 151 L260 151"/>
-    <path className="arm" d="M91 139 L76 157 L61 157"/>
-    <path className="torso" d="M112 116 Q157 103 207 116 L218 132 Q167 143 117 137 Z"/>
-    <path className="head" d="M96 112 Q82 105 87 91 Q93 78 107 83 Q119 89 112 104 L105 113 Z"/>
-    <path className="hair" d="M87 96 Q83 78 101 77 Q115 78 117 91 Q106 85 98 91 Z"/>
-    <path className="joint" d="M117 137 L117 137 M215 132 L215 132"/>
-  </g> : mode === "bridge" ? <g className="figure figure-bridge">
-    <path className="limb" d="M81 145 L115 145 L161 145"/>
-    <path className="limb" d="M191 118 L223 143 L255 143"/>
-    <path className="limb" d="M177 117 L205 142"/>
-    <path className="torso" d="M104 119 Q143 82 186 103 L202 119 Q151 130 111 138 Z"/>
-    <path className="head" d="M78 115 Q64 109 69 95 Q74 83 87 87 Q100 92 94 106 L88 116 Z"/>
-    <path className="hair" d="M69 99 Q66 82 82 81 Q95 81 99 94 Q88 88 78 94 Z"/>
-    <path className="arm" d="M102 126 L91 145 L78 145"/>
-  </g> : mode === "stretch" ? <g className="figure figure-stretch">
-    <path className="limb" d="M144 111 L119 137 L86 143 L54 143"/>
-    <path className="limb" d="M145 112 L174 136 L209 143 L241 143"/>
-    <path className="arm" d="M139 77 L111 103 L85 107"/>
-    <path className="arm" d="M151 77 L177 101 L202 102"/>
-    <path className="torso" d="M133 69 Q148 61 162 70 L171 112 L139 117 L127 91 Z"/>
-    <path className="head" d="M132 55 Q120 42 130 29 Q142 18 153 29 Q162 41 151 54 L146 62 Z"/>
-    <path className="hair" d="M127 42 Q122 22 142 20 Q158 22 159 39 Q148 31 138 36 Z"/>
-  </g> : <g className={`figure figure-${mode}`}>
-    <path className="limb back-leg" d="M145 119 L117 145 L105 159"/>
-    <path className="limb front-leg" d="M163 118 L190 144 L210 158"/>
-    <path className="arm" d="M139 73 L111 98 L101 119"/>
-    <path className="arm" d="M166 73 L191 97 L204 116"/>
+  const variant =
+    /flexão/i.test(name) ? "pushup" :
+    /prancha/i.test(name) ? "plank" :
+    /dead bug/i.test(name) ? "deadbug" :
+    /bird dog/i.test(name) ? "birddog" :
+    /superman/i.test(name) ? "superman" :
+    /abdominal/i.test(name) ? "crunch" :
+    /ponte|elevação pélvica/i.test(name) ? "bridge" :
+    /coice/i.test(name) ? "kick" :
+    /abdução/i.test(name) ? "sideleg" :
+    /afundo/i.test(name) ? "lunge" :
+    /marcha|passo lateral|joelhos/i.test(name) ? "march" :
+    /agachamento/i.test(name) ? "squat" : "mobility";
+  const floor = ["pushup","plank","deadbug","birddog","superman","crunch","bridge","kick","sideleg"].includes(variant);
+  const labels:Record<string,string> = {
+    pushup:"FLEXIONE E EMPURRE",plank:"CORPO ALINHADO",deadbug:"BRAÇO E PERNA OPOSTOS",
+    birddog:"ESTENDA LADOS OPOSTOS",superman:"ELEVAÇÃO SUAVE",crunch:"CONTRAÇÃO ABDOMINAL",
+    bridge:"ELEVE O QUADRIL",kick:"ESTENDA A PERNA",sideleg:"ABRA A PERNA",
+    lunge:"PASSO PARA TRÁS",march:"MOVIMENTO ALTERNADO",squat:"DESÇA COM CONTROLE",mobility:"MOVIMENTO LEVE"
+  };
+  const pose = variant === "pushup" || variant === "plank" ? <g className={`figure figure-${variant}`}>
+    <path className="limb" d="M78 143 L119 143 L169 129 L215 129 L249 129"/>
+    <path className="limb" d="M118 140 L100 157 L88 157 M215 129 L236 148 L253 148"/>
+    <path className="arm" d="M139 119 L119 144 L109 157 M153 119 L173 143 L183 157"/>
+    <path className="torso" d="M119 108 Q165 96 215 111 L220 130 Q167 139 118 128 Z"/>
+    <path className="head" d="M105 111 Q91 103 97 89 Q103 77 117 82 Q129 89 121 103 L115 112 Z"/>
+    <path className="hair" d="M97 94 Q94 77 111 76 Q126 78 129 91 Q115 84 106 91 Z"/>
+  </g> : variant === "deadbug" ? <g className="figure figure-deadbug">
+    <path className="limb" d="M112 122 L86 94 L66 80 M112 122 L94 145 L78 153"/>
+    <path className="limb" d="M205 121 L229 91 L250 79 M205 121 L229 145 L248 153"/>
+    <path className="arm" d="M132 111 L113 80 L96 67 M185 111 L203 83 L220 70"/>
+    <path className="torso" d="M115 106 Q157 91 204 106 L210 128 Q159 140 111 128 Z"/>
+    <path className="head" d="M92 116 Q78 108 84 94 Q90 82 104 87 Q116 94 108 108 L102 117 Z"/>
+    <path className="hair" d="M84 99 Q81 81 99 80 Q113 82 116 95 Q103 88 93 95 Z"/>
+  </g> : variant === "birddog" ? <g className="figure figure-birddog">
+    <path className="limb" d="M101 131 L82 151 L68 151 M192 130 L211 151 L229 151"/>
+    <path className="limb" d="M188 119 L222 91 L247 81"/>
+    <path className="arm" d="M117 118 L93 94 L68 87 M168 122 L184 146 L194 156"/>
+    <path className="torso" d="M111 108 Q153 95 197 108 L202 130 Q153 139 105 129 Z"/>
+    <path className="head" d="M102 110 Q88 101 94 88 Q101 76 114 82 Q126 89 118 103 L112 112 Z"/>
+    <path className="hair" d="M94 94 Q91 77 108 76 Q122 78 125 91 Q112 85 102 91 Z"/>
+  </g> : variant === "bridge" || variant === "kick" || variant === "sideleg" ? <g className={`figure figure-${variant}`}>
+    <path className="limb" d="M82 146 L111 146 L147 146"/>
+    <path className="limb" d={variant==="bridge"?"M177 119 L216 143 L252 143":variant==="kick"?"M174 120 L212 100 L246 91":"M174 120 L213 96 L250 91"}/>
+    <path className="limb" d="M176 119 L199 146 L219 146"/>
+    <path className="arm" d="M110 124 L95 146 L81 146"/>
+    <path className="torso" d={variant==="bridge"?"M103 120 Q146 80 187 104 L204 121 Q151 134 110 139 Z":"M104 117 Q147 100 185 111 L197 130 Q148 137 107 134 Z"}/>
+    <path className="head" d="M79 116 Q65 108 71 95 Q77 82 90 88 Q102 94 94 108 L89 117 Z"/>
+    <path className="hair" d="M71 99 Q68 82 85 82 Q99 83 102 96 Q88 89 78 96 Z"/>
+  </g> : variant === "superman" || variant === "crunch" ? <g className={`figure figure-${variant}`}>
+    <path className="limb" d="M104 128 L74 105 L51 94 M202 128 L232 105 L257 94"/>
+    <path className="limb" d="M130 129 L113 151 L96 151 M185 129 L204 151 L221 151"/>
+    <path className="torso" d="M103 113 Q157 97 207 113 L213 133 Q159 143 100 133 Z"/>
+    <path className="head" d="M89 119 Q75 110 81 96 Q88 83 101 89 Q113 96 105 110 L99 120 Z"/>
+    <path className="hair" d="M81 100 Q78 83 95 82 Q109 84 112 97 Q99 90 89 97 Z"/>
+  </g> : variant === "lunge" || variant === "squat" || variant === "march" ? <g className={`figure figure-${variant}`}>
+    <path className="limb back-leg" d={variant==="lunge"?"M146 119 L116 139 L105 159":variant==="squat"?"M143 119 L124 140 L116 159":"M145 119 L126 141 L121 159"}/>
+    <path className="limb front-leg" d={variant==="lunge"?"M164 118 L195 136 L224 136 L242 153":variant==="march"?"M164 118 L191 133 L210 111 L226 111":"M163 118 L188 140 L202 159"}/>
+    <path className="arm" d="M139 73 L111 98 L101 119 M166 73 L191 97 L204 116"/>
+    <path className="torso" d="M137 62 Q153 54 169 63 L174 112 Q154 124 133 111 Z"/>
+    <path className="head" d="M139 43 Q126 29 137 16 Q150 5 162 17 Q171 30 160 43 L154 51 Z"/>
+    <path className="hair" d="M135 29 Q131 10 149 8 Q165 9 169 26 Q157 18 146 24 Z"/>
+  </g> : <g className="figure figure-mobility">
+    <path className="limb" d="M145 112 L117 143 L91 151 M161 112 L190 142 L216 151"/>
+    <path className="arm" d="M139 75 L105 54 L81 64 M163 75 L197 54 L221 64"/>
     <path className="torso" d="M137 62 Q153 54 169 63 L174 112 Q154 124 133 111 Z"/>
     <path className="head" d="M139 43 Q126 29 137 16 Q150 5 162 17 Q171 30 160 43 L154 51 Z"/>
     <path className="hair" d="M135 29 Q131 10 149 8 Q165 9 169 26 Q157 18 146 24 Z"/>
   </g>;
-  return <div className={`exercise-demo demo-${mode}`}>
+  return <div className={`exercise-demo demo-${variant}`}>
     <div className="demo-heading"><span className="demo-live"><i/> DEMONSTRAÇÃO DO MOVIMENTO</span><span>GUIA VISUAL</span></div>
     <div className="demo-stage">
       <div className="demo-halo"/>
-      <svg className="demo-visual" viewBox="0 0 320 190" role="img" aria-label={`Ilustração de referência para ${name}`}>
+      <svg className="demo-visual" viewBox="0 0 320 190" role="img" aria-label={`Posição ilustrada para ${name}`}>
         <defs>
-          <linearGradient id="outfitPink" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stopColor="#ff8fc3"/><stop offset="1" stopColor="#d9438d"/></linearGradient>
-          <linearGradient id="skinTone" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stopColor="#ffd9c8"/><stop offset="1" stopColor="#eaa58f"/></linearGradient>
+          <linearGradient id="outfitPink" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stopColor="#ff9dcc"/><stop offset="1" stopColor="#c9367f"/></linearGradient>
+          <linearGradient id="skinTone" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stopColor="#ffddca"/><stop offset="1" stopColor="#df967f"/></linearGradient>
         </defs>
-        <ellipse cx="158" cy="165" rx="112" ry="9" className="demo-shadow"/>
-        {mode === "floor" || mode === "bridge" ? <rect x="39" y="151" width="242" height="10" rx="5" className="demo-mat"/> : <path d="M25 165 H295" className="demo-ground"/>}
-        <g className="demo-motion-arrow"><path d="M264 48 Q289 68 266 91"/><path d="M257 83 L266 92 L275 83"/></g>
-        {person}
+        <ellipse cx="158" cy="166" rx="112" ry="8" className="demo-shadow"/>
+        {floor ? <rect x="35" y="151" width="250" height="11" rx="5.5" className="demo-mat"/> : <path d="M24 165 H296" className="demo-ground"/>}
+        <g className="demo-motion-arrow"><path d="M267 45 Q289 66 267 89"/><path d="M259 82 L267 90 L275 82"/></g>
+        {pose}
       </svg>
-      <div className="demo-step-pill"><span>✦</span> MOVIMENTO EM FOCO</div>
+      <div className="demo-step-pill"><span>✦</span> {labels[variant]}</div>
     </div>
-    <div className="demo-footer"><strong>{labels[mode]}</strong><span>Veja a posição ilustrada e siga o passo a passo abaixo</span></div>
+    <div className="demo-footer"><strong>{labels[variant]}</strong><span>Observe o alinhamento e execute sem pressa</span></div>
   </div>;
 }
 
