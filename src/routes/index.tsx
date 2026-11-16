@@ -92,7 +92,7 @@ function App() {
       <main className="main-area">
         <header className="topbar"><div className="mobile-brand">✿ calisteniaasiática</div><div className="breadcrumb">Sua jornada <span>/</span> {tab}</div><div className="top-actions"><span className="streak"><Flame size={16}/> {done.length} treinos</span><button className="icon-button" aria-label="Perfil" onClick={() => setTab("Perfil")}><UserRound size={19}/></button></div></header>
         <div className="content">
-          {tab === "Início" && <HomePage done={done} start={start} setTab={setTab} />}
+          {tab === "Início" && <HomePage done={done} history={history} start={start} setTab={setTab} />}
           {tab === "Treinos" && <WorkoutPage items={filtered} query={query} setQuery={setQuery} start={start} />}
           {tab === "Explorar" && <ExplorePage setGoal={setGoal} goal={goal} setTab={setTab} start={start} challengeStarted={challengeStarted} challengeDay={challengeDay} onStartChallenge={() => { setChallengeStarted(true); setTab("Treinos"); }} />}
           {tab === "Evolução" && <ProgressPage done={done} history={history} />}
@@ -134,10 +134,12 @@ function exerciseGuidance(name: string) {
 
 function PageHeading({kicker,title,description}:{kicker:string;title:string;description:string}) { return <div className="page-heading"><span className="eyebrow">{kicker}</span><h1>{title}</h1><p>{description}</p></div>; }
 
-function HomePage({done,start,setTab}:{done:string[];start:(w:Workout)=>void;setTab:(t:Tab)=>void}) {
+function HomePage({done,history,start,setTab}:{done:string[];history:WorkoutSession[];start:(w:Workout)=>void;setTab:(t:Tab)=>void}) {
+  const totalSessions = history.length || done.length;
+  const totalMinutes = history.length ? history.reduce((sum, session) => sum + session.duration, 0) : done.length * 18;
   return <><div className="welcome-row"><div><span className="eyebrow">SUA JORNADA COMEÇA NO SEU RITMO</span><h1>Olá, que bom ter você <em>por aqui.</em></h1><p>Seu corpo é sua casa. Cuide dele com carinho, um movimento de cada vez.</p></div><div className="welcome-flower">✿</div></div>
     <section className="hero-card"><div className="hero-copy"><span className="hero-tag"><Sparkles size={14}/> SEU MOMENTO DE HOJE</span><h2>Um pouco melhor<br/>a cada movimento.</h2><p>Comece com um treino pensado para você e transforme intenção em consistência.</p><button className="button-light" onClick={()=>start(workouts[0])}>Começar treino <ArrowRight size={17}/></button></div><div className="hero-illustration"><div className="sun-disc"/><div className="hero-person">♀</div><span className="hero-caption">FORÇA • EQUILÍBRIO • VOCÊ</span></div></section>
-    <div className="stats-grid"><Stat icon={Flame} label="Sua jornada" value={done.length ? done.length + " treinos" : "Comece hoje"} note="Continue assim!"/><Stat icon={Clock3} label="Tempo em movimento" value={done.length * 18 + " min"} note="Cada minuto conta"/><Stat icon={Award} label="Treinos concluídos" value={String(done.length)} note="Sua evolução começa aqui"/></div>
+    <div className="stats-grid"><Stat icon={Flame} label="Sua jornada" value={totalSessions ? totalSessions + " treinos" : "Comece hoje"} note="Continue assim!"/><Stat icon={Clock3} label="Tempo em movimento" value={totalMinutes + " min"} note="Cada minuto conta"/><Stat icon={Award} label="Treinos concluídos" value={String(totalSessions)} note="Sua evolução começa aqui"/></div>
     <div className="section-heading"><div><span className="eyebrow">FEITO PARA VOCÊ</span><h2>Seu próximo treino</h2></div><button className="text-link" onClick={()=>setTab("Treinos")}>Ver todos <ArrowRight size={16}/></button></div>
     <div className="workout-grid">{workouts.slice(0,3).map(w=><WorkoutCard key={w.title} workout={w} start={start}/>)}</div>
     <div className="bottom-note"><Heart size={18}/><span>Não precisa ser perfeito. Só precisa ser seu.</span><span className="note-right">UM DIA DE CADA VEZ</span></div>
