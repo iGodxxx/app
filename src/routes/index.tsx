@@ -2,8 +2,8 @@ import { useMemo, useState } from "react";
 import { createFileRoute } from "@tanstack/react-router";
 import {
   Activity, ArrowRight, Award, BarChart3, CalendarDays, Check, ChevronRight,
-  Clock3, Dumbbell, Flame, Heart, Home, Play, Plus, Search, Settings,
-  Sparkles, Target, UserRound, Waves, X, Zap
+  Clock3, Dumbbell, Flame, Heart, Home, Search, Settings,
+  Sparkles, Target, UserRound, Waves, X
 } from "lucide-react";
 
 export const Route = createFileRoute("/")({
