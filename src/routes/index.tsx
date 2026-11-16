@@ -18,12 +18,17 @@ export const Route = createFileRoute("/")({
 
 type Tab = "Início" | "Treinos" | "Explorar" | "Evolução" | "Perfil";
 type Workout = { title: string; level: string; time: string; focus: string; color: string; description: string; exercises: string[] };
+type WorkoutSession = { id: string; title: string; completedAt: string; duration: number };
 
 const workouts: Workout[] = [
   { title: "Corpo inteiro em movimento", level: "Iniciante", time: "18 min", focus: "Full body", color: "peach", description: "Uma sequência leve para ativar o corpo todo e construir consistência.", exercises: ["Aquecimento articular", "Agachamento livre", "Flexão inclinada", "Ponte de glúteos", "Prancha com joelhos"] },
   { title: "Pernas & glúteos", level: "Intermediário", time: "24 min", focus: "Inferiores", color: "lilac", description: "Fortaleça pernas e glúteos com movimentos controlados e progressivos.", exercises: ["Agachamento sumô", "Afundo alternado", "Elevação pélvica", "Agachamento isométrico", "Alongamento de pernas"] },
   { title: "Core forte", level: "Iniciante", time: "12 min", focus: "Abdômen", color: "sage", description: "Estabilidade e consciência corporal para fortalecer a região central.", exercises: ["Dead bug", "Prancha baixa", "Bird dog", "Abdominal curto", "Respiração e relaxamento"] },
-  { title: "Braços & postura", level: "Intermediário", time: "20 min", focus: "Superiores", color: "rose", description: "Trabalhe braços, ombros e postura sem precisar de equipamentos.", exercises: ["Mobilidade de ombros", "Flexão na parede", "Prancha alta", "Superman", "Alongamento peitoral"] },\n  { title: "Mobilidade e leveza", level: "Iniciante", time: "15 min", focus: "Mobilidade", color: "lilac", description: "Movimentos suaves para melhorar a mobilidade e relaxar as articulações.", exercises: ["Círculos de ombros", "Gato e vaca", "Mobilidade de quadril", "Alongamento de posterior", "Respiração profunda"] },\n  { title: "Cardio sem impacto", level: "Iniciante", time: "16 min", focus: "Cardio", color: "peach", description: "Eleve o ritmo com movimentos de baixo impacto e pausas conscientes.", exercises: ["Marcha estacionária", "Passo lateral", "Agachamento curto", "Elevação alternada de joelhos", "Desaceleração"] },\n  { title: "Glúteos em foco", level: "Intermediário", time: "22 min", focus: "Glúteos", color: "rose", description: "Uma sequência focada em força e controle para a região dos glúteos.", exercises: ["Ponte de glúteos", "Coice em quatro apoios", "Abdução lateral", "Ponte unilateral", "Alongamento de glúteos"] },\n  { title: "Base de força", level: "Avançado", time: "28 min", focus: "Full body", color: "sage", description: "Um treino desafiador para quem já domina os movimentos básicos.", exercises: ["Agachamento com pausa", "Flexão tradicional", "Afundo reverso", "Prancha alta com toque", "Prancha lateral"] },
+  { title: "Braços & postura", level: "Intermediário", time: "20 min", focus: "Superiores", color: "rose", description: "Trabalhe braços, ombros e postura sem precisar de equipamentos.", exercises: ["Mobilidade de ombros", "Flexão na parede", "Prancha alta", "Superman", "Alongamento peitoral"] },
+  { title: "Mobilidade e leveza", level: "Iniciante", time: "15 min", focus: "Mobilidade", color: "lilac", description: "Movimentos suaves para melhorar a mobilidade e relaxar as articulações.", exercises: ["Círculos de ombros", "Gato e vaca", "Mobilidade de quadril", "Alongamento de posterior", "Respiração profunda"] },
+  { title: "Cardio sem impacto", level: "Iniciante", time: "16 min", focus: "Cardio", color: "peach", description: "Eleve o ritmo com movimentos de baixo impacto e pausas conscientes.", exercises: ["Marcha estacionária", "Passo lateral", "Agachamento curto", "Elevação alternada de joelhos", "Desaceleração"] },
+  { title: "Glúteos em foco", level: "Intermediário", time: "22 min", focus: "Glúteos", color: "rose", description: "Uma sequência focada em força e controle para a região dos glúteos.", exercises: ["Ponte de glúteos", "Coice em quatro apoios", "Abdução lateral", "Ponte unilateral", "Alongamento de glúteos"] },
+  { title: "Base de força", level: "Avançado", time: "28 min", focus: "Full body", color: "sage", description: "Um treino desafiador para quem já domina os movimentos básicos.", exercises: ["Agachamento com pausa", "Flexão tradicional", "Afundo reverso", "Prancha alta com toque", "Prancha lateral"] },
 ];
 
 const nav: { label: Tab; icon: typeof Home }[] = [
@@ -34,15 +39,47 @@ function App() {
   const [tab, setTab] = useState<Tab>("Início");
   const [active, setActive] = useState<Workout | null>(null);
   const [step, setStep] = useState(0);
-  const [done, setDone] = useState<string[]>([]);\n  const [hydrated, setHydrated] = useState(false);\n  const [challengeDay, setChallengeDay] = useState(0);\n  const [challengeStarted, setChallengeStarted] = useState(false);
+  const [done, setDone] = useState<string[]>([]);
+  const [history, setHistory] = useState<WorkoutSession[]>([]);
+  const [hydrated, setHydrated] = useState(false);
+  const [challengeDay, setChallengeDay] = useState(0);
+  const [challengeStarted, setChallengeStarted] = useState(false);
   const [query, setQuery] = useState("");
   const [goal, setGoal] = useState("Definição");
   const [level, setLevel] = useState("Iniciante");
   const [days, setDays] = useState("4 dias");
-  const [onboarding, setOnboarding] = useState(false);\n  useEffect(() => {\n    try {\n      const saved = localStorage.getItem("calistenia-asiatica-state");\n      if (saved) {\n        const data = JSON.parse(saved) as { done?: string[]; goal?: string; level?: string; days?: string; challengeDay?: number; challengeStarted?: boolean };\n        if (Array.isArray(data.done)) setDone(data.done);\n        if (typeof data.goal === "string") setGoal(data.goal);\n        if (typeof data.level === "string") setLevel(data.level);\n        if (typeof data.days === "string") setDays(data.days);\n        if (typeof data.challengeDay === "number") setChallengeDay(Math.min(7, Math.max(0, data.challengeDay)));\n        if (typeof data.challengeStarted === "boolean") setChallengeStarted(data.challengeStarted);\n      }\n    } catch { /* Estado local inválido: mantém os padrões iniciais. */ }\n    setHydrated(true);\n  }, []);\n  useEffect(() => {\n    if (!hydrated) return;\n    localStorage.setItem("calistenia-asiatica-state", JSON.stringify({ done, goal, level, days, challengeDay, challengeStarted }));\n  }, [done, goal, level, days, challengeDay, challengeStarted, hydrated]);
+  const [onboarding, setOnboarding] = useState(false);
+  useEffect(() => {
+    try {
+      const saved = localStorage.getItem("calistenia-asiatica-state");
+      if (saved) {
+        const data = JSON.parse(saved) as { done?: string[]; history?: WorkoutSession[]; goal?: string; level?: string; days?: string; challengeDay?: number; challengeStarted?: boolean };
+        if (Array.isArray(data.done)) setDone(data.done);
+        if (Array.isArray(data.history)) setHistory(data.history);
+        if (typeof data.goal === "string") setGoal(data.goal);
+        if (typeof data.level === "string") setLevel(data.level);
+        if (typeof data.days === "string") setDays(data.days);
+        if (typeof data.challengeDay === "number") setChallengeDay(Math.min(7, Math.max(0, data.challengeDay)));
+        if (typeof data.challengeStarted === "boolean") setChallengeStarted(data.challengeStarted);
+      }
+    } catch { /* Estado local inválido: mantém os padrões iniciais. */ }
+    setHydrated(true);
+  }, []);
+  useEffect(() => {
+    if (!hydrated) return;
+    localStorage.setItem("calistenia-asiatica-state", JSON.stringify({ done, history, goal, level, days, challengeDay, challengeStarted }));
+  }, [done, history, goal, level, days, challengeDay, challengeStarted, hydrated]);
   const filtered = useMemo(() => workouts.filter(w => (w.title + w.focus + w.level).toLowerCase().includes(query.toLowerCase())), [query]);
   const start = (w: Workout) => { setActive(w); setStep(0); };
-  const finish = () => { if (active && !done.includes(active.title)) setDone([...done, active.title]); if (challengeStarted && challengeDay < 7) setChallengeDay(challengeDay + 1); setActive(null); setTab("Evolução"); };
+  const finish = () => {
+    if (active) {
+      if (!done.includes(active.title)) setDone([...done, active.title]);
+      setHistory(previous => [...previous, { id: `${Date.now()}-${previous.length}`, title: active.title, completedAt: new Date().toISOString(), duration: Number.parseInt(active.time, 10) || 0 }]);
+    }
+    if (challengeStarted && challengeDay < 7) setChallengeDay(challengeDay + 1);
+    setActive(null);
+    setTab("Evolução");
+  };
 
   return (
     <div className="app-shell">
@@ -58,7 +95,7 @@ function App() {
           {tab === "Início" && <HomePage done={done} start={start} setTab={setTab} />}
           {tab === "Treinos" && <WorkoutPage items={filtered} query={query} setQuery={setQuery} start={start} />}
           {tab === "Explorar" && <ExplorePage setGoal={setGoal} goal={goal} setTab={setTab} start={start} challengeStarted={challengeStarted} challengeDay={challengeDay} onStartChallenge={() => { setChallengeStarted(true); setTab("Treinos"); }} />}
-          {tab === "Evolução" && <ProgressPage done={done} />}
+          {tab === "Evolução" && <ProgressPage done={done} history={history} />}
           {tab === "Perfil" && <ProfilePage goal={goal} setGoal={setGoal} level={level} setLevel={setLevel} days={days} setDays={setDays} setOnboarding={setOnboarding} />}
         </div>
       </main>
@@ -69,7 +106,33 @@ function App() {
   );
 }
 
-function exerciseGuidance(name: string) {\n  const guidance: Record<string, string> = {\n    "Aquecimento articular": "Faça movimentos circulares suaves com ombros, quadris, joelhos e tornozelos por 2 a 3 minutos.",\n    "Agachamento livre": "Afaste os pés na largura dos quadris, leve o quadril para trás e flexione os joelhos. Suba empurrando o chão.",\n    "Flexão inclinada": "Apoie as mãos em uma superfície firme, mantenha o corpo alinhado e flexione os cotovelos levando o peito em direção ao apoio.",\n    "Ponte de glúteos": "Deite com joelhos flexionados e pés apoiados. Eleve o quadril contraindo os glúteos e desça devagar.",\n    "Prancha com joelhos": "Apoie antebraços e joelhos, mantenha abdômen ativo e coluna neutra, sem deixar o quadril cair.",\n    "Agachamento sumô": "Afaste mais os pés, gire levemente as pontas para fora e agache mantendo os joelhos alinhados aos pés.",\n    "Afundo alternado": "Dê um passo para trás, flexione os dois joelhos com controle e retorne. Alterne as pernas.",\n    "Elevação pélvica": "Apoie costas e pés, eleve o quadril até alinhar tronco e coxas e retorne lentamente.",\n    "Agachamento isométrico": "Desça até uma posição confortável de agachamento e sustente, mantendo o peso distribuído nos pés.",\n    "Alongamento de pernas": "Alongue suavemente a parte posterior das pernas, sem quicar e sem forçar a amplitude.",\n    "Dead bug": "Deitada de costas, estenda braço e perna opostos mantendo a lombar estável. Alterne os lados.",\n    "Prancha baixa": "Apoie antebraços e pontas dos pés, mantenha cabeça, tronco e quadril alinhados.",\n    "Bird dog": "Em quatro apoios, estenda braço e perna opostos sem girar o quadril. Alterne com controle.",\n    "Abdominal curto": "Eleve levemente cabeça e ombros contraindo o abdômen, sem puxar o pescoço.",\n    "Respiração e relaxamento": "Inspire pelo nariz e solte o ar lentamente, relaxando ombros e mandíbula.",\n    "Mobilidade de ombros": "Faça círculos lentos com os braços e movimentos de abrir e fechar sem elevar os ombros em excesso.",\n    "Flexão na parede": "Apoie as mãos na parede, flexione os cotovelos aproximando o tronco e empurre para voltar.",\n    "Prancha alta": "Com mãos abaixo dos ombros, estenda as pernas e mantenha o corpo alinhado e abdômen ativo.",\n    "Superman": "De bruços, eleve suavemente braços e pernas, sem forçar a lombar, e retorne.",\n    "Alongamento peitoral": "Apoie o antebraço em uma parede e gire o tronco levemente para o lado oposto.",\n  };\n  return guidance[name] ?? "Execute devagar, com postura confortável e movimento controlado. Reduza a amplitude ou faça uma pausa se sentir desconforto.";\n}\n\nfunction PageHeading({kicker,title,description}:{kicker:string;title:string;description:string}) { return <div className="page-heading"><span className="eyebrow">{kicker}</span><h1>{title}</h1><p>{description}</p></div>; }
+function exerciseGuidance(name: string) {
+  const guidance: Record<string, string> = {
+    "Aquecimento articular": "Faça movimentos circulares suaves com ombros, quadris, joelhos e tornozelos por 2 a 3 minutos.",
+    "Agachamento livre": "Afaste os pés na largura dos quadris, leve o quadril para trás e flexione os joelhos. Suba empurrando o chão.",
+    "Flexão inclinada": "Apoie as mãos em uma superfície firme, mantenha o corpo alinhado e flexione os cotovelos levando o peito em direção ao apoio.",
+    "Ponte de glúteos": "Deite com joelhos flexionados e pés apoiados. Eleve o quadril contraindo os glúteos e desça devagar.",
+    "Prancha com joelhos": "Apoie antebraços e joelhos, mantenha abdômen ativo e coluna neutra, sem deixar o quadril cair.",
+    "Agachamento sumô": "Afaste mais os pés, gire levemente as pontas para fora e agache mantendo os joelhos alinhados aos pés.",
+    "Afundo alternado": "Dê um passo para trás, flexione os dois joelhos com controle e retorne. Alterne as pernas.",
+    "Elevação pélvica": "Apoie costas e pés, eleve o quadril até alinhar tronco e coxas e retorne lentamente.",
+    "Agachamento isométrico": "Desça até uma posição confortável de agachamento e sustente, mantendo o peso distribuído nos pés.",
+    "Alongamento de pernas": "Alongue suavemente a parte posterior das pernas, sem quicar e sem forçar a amplitude.",
+    "Dead bug": "Deitada de costas, estenda braço e perna opostos mantendo a lombar estável. Alterne os lados.",
+    "Prancha baixa": "Apoie antebraços e pontas dos pés, mantenha cabeça, tronco e quadril alinhados.",
+    "Bird dog": "Em quatro apoios, estenda braço e perna opostos sem girar o quadril. Alterne com controle.",
+    "Abdominal curto": "Eleve levemente cabeça e ombros contraindo o abdômen, sem puxar o pescoço.",
+    "Respiração e relaxamento": "Inspire pelo nariz e solte o ar lentamente, relaxando ombros e mandíbula.",
+    "Mobilidade de ombros": "Faça círculos lentos com os braços e movimentos de abrir e fechar sem elevar os ombros em excesso.",
+    "Flexão na parede": "Apoie as mãos na parede, flexione os cotovelos aproximando o tronco e empurre para voltar.",
+    "Prancha alta": "Com mãos abaixo dos ombros, estenda as pernas e mantenha o corpo alinhado e abdômen ativo.",
+    "Superman": "De bruços, eleve suavemente braços e pernas, sem forçar a lombar, e retorne.",
+    "Alongamento peitoral": "Apoie o antebraço em uma parede e gire o tronco levemente para o lado oposto.",
+  };
+  return guidance[name] ?? "Execute devagar, com postura confortável e movimento controlado. Reduza a amplitude ou faça uma pausa se sentir desconforto.";
+}
+
+function PageHeading({kicker,title,description}:{kicker:string;title:string;description:string}) { return <div className="page-heading"><span className="eyebrow">{kicker}</span><h1>{title}</h1><p>{description}</p></div>; }
 
 function HomePage({done,start,setTab}:{done:string[];start:(w:Workout)=>void;setTab:(t:Tab)=>void}) {
   return <><div className="welcome-row"><div><span className="eyebrow">SUA JORNADA COMEÇA NO SEU RITMO</span><h1>Olá, que bom ter você <em>por aqui.</em></h1><p>Seu corpo é sua casa. Cuide dele com carinho, um movimento de cada vez.</p></div><div className="welcome-flower">✿</div></div>
@@ -89,6 +152,11 @@ function WorkoutPage({items,query,setQuery,start}:{items:Workout[];query:string;
 
 function ExplorePage({goal,setGoal,setTab,start,challengeStarted,challengeDay,onStartChallenge}:{goal:string;setGoal:(v:string)=>void;setTab:(t:Tab)=>void;start:(w:Workout)=>void;challengeStarted:boolean;challengeDay:number;onStartChallenge:()=>void}) { const goals=[["Perder peso","Movimente-se com leveza e constância","↗"],["Ganhar massa","Construa força progressivamente","✳"],["Definição","Encontre equilíbrio entre força e controle","◇"],["Fortalecimento","Uma base forte para todos os movimentos","◉"],["Mobilidade","Mais liberdade para se movimentar","〰"]]; return <><PageHeading kicker="EXPLORE POSSIBILIDADES" title="O que faz sentido para você?" description="Escolha um caminho. A sua jornada pode mudar sempre que você precisar."/><div className="goal-grid">{goals.map(([name,desc,symbol])=><button key={name} onClick={()=>{setGoal(name);setTab("Treinos")}} className={goal===name?"goal-card goal-selected":"goal-card"}><span className="goal-symbol">{symbol}</span><strong>{name}</strong><small>{desc}</small><ChevronRight size={18}/></button>)}</div><div className="section-heading"><div><span className="eyebrow">COMECE POR AQUI</span><h2>Pequenos desafios, grandes hábitos</h2></div></div><div className="challenge-card"><div className="challenge-icon"><Target size={26}/></div><div><span className="eyebrow">DESAFIO DE 7 ETAPAS</span><h3>{challengeDay >= 7 ? "Desafio concluído!" : challengeStarted ? `Você está na etapa ${challengeDay + 1}` : "Uma semana por você"}</h3><p>{challengeDay >= 7 ? "Parabéns por completar sua semana de movimento." : "Sete etapas para criar espaço na rotina para se movimentar. No seu ritmo, sem pressão."}</p><div className="challenge-days">{Array.from({length:7},(_,i)=><span key={i} className={i<challengeDay?"day-done":i===challengeDay&&challengeStarted?"day-current":""}>{i<challengeDay?"✓":i+1}</span>)}</div></div><button className="button-primary" onClick={()=>challengeStarted?start(workouts[Math.min(challengeDay,workouts.length-1)]):onStartChallenge()}>{challengeDay>=7?"Repetir treino":challengeStarted?"Fazer treino":"Começar desafio"} <ArrowRight size={16}/></button></div></>; }
 
-function ProgressPage({done}:{done:string[]}) { return <><PageHeading kicker="CADA PASSO CONTA" title="Olha o quanto você já fez." description="A evolução não acontece de um dia para o outro. Ela acontece um dia de cada vez."/><div className="stats-grid"><Stat icon={Dumbbell} label="Treinos concluídos" value={String(done.length)} note="Sua dedicação"/><Stat icon={Clock3} label="Minutos ativos" value={done.length*18+" min"} note="Tempo investido em você"/><Stat icon={Flame} label="Etapas concluídas" value={done.length?done.length+" treinos":"Comece hoje"} note="Constância é tudo"/></div><div className="progress-panel"><div className="section-heading"><div><span className="eyebrow">SEU HISTÓRICO</span><h2>Treinos realizados</h2></div><CalendarDays size={20}/></div>{done.length===0?<div className="empty-state"><div className="empty-icon"><BarChart3 size={28}/></div><h3>Sua história começa hoje.</h3><p>Conclua seu primeiro treino e ele aparecerá aqui.</p></div>:done.map((x,i)=><div className="history-row" key={i}><span className="history-check"><Check size={16}/></span><div><strong>{x}</strong><small>Treino concluído • {18} min</small></div><span className="history-date">Concluído</span></div>)}</div><p className="gentle-reminder"><Heart size={17}/> Compare-se apenas com quem você era ontem.</p></>; }
+function ProgressPage({done,history}:{done:string[];history:WorkoutSession[]}) {
+  const totalSessions = history.length || done.length;
+  const totalMinutes = history.length ? history.reduce((sum, session) => sum + session.duration, 0) : done.length * 18;
+  const legacyItems = done.filter(title => !history.some(session => session.title === title));
+  return <><PageHeading kicker="CADA PASSO CONTA" title="Olha o quanto você já fez." description="A evolução não acontece de um dia para o outro. Ela acontece um dia de cada vez."/><div className="stats-grid"><Stat icon={Dumbbell} label="Treinos concluídos" value={String(totalSessions)} note="Sua dedicação"/><Stat icon={Clock3} label="Minutos ativos" value={totalMinutes+" min"} note="Tempo investido em você"/><Stat icon={Flame} label="Etapas concluídas" value={totalSessions?totalSessions+" treinos":"Comece hoje"} note="Constância é tudo"/></div><div className="progress-panel"><div className="section-heading"><div><span className="eyebrow">SEU HISTÓRICO</span><h2>Treinos realizados</h2></div><CalendarDays size={20}/></div>{totalSessions===0?<div className="empty-state"><div className="empty-icon"><BarChart3 size={28}/></div><h3>Sua história começa hoje.</h3><p>Conclua seu primeiro treino e ele aparecerá aqui.</p></div>:<>{history.slice().reverse().map(session=><div className="history-row" key={session.id}><span className="history-check"><Check size={16}/></span><div><strong>{session.title}</strong><small>Treino concluído • {session.duration} min</small></div><span className="history-date">{new Date(session.completedAt).toLocaleDateString("pt-BR", { day: "2-digit", month: "short", year: "numeric" })}</span></div>)}{legacyItems.map((title,index)=><div className="history-row" key={`legacy-${index}`}><span className="history-check"><Check size={16}/></span><div><strong>{title}</strong><small>Treino concluído • data não registrada</small></div><span className="history-date">Anterior</span></div>)}</>}</div><p className="gentle-reminder"><Heart size={17}/> Compare-se apenas com quem você era ontem.</p></>;
+}
 
 function ProfilePage({goal,setGoal,level,setLevel,days,setDays,setOnboarding}:{goal:string;setGoal:(v:string)=>void;level:string;setLevel:(v:string)=>void;days:string;setDays:(v:string)=>void;setOnboarding:(v:boolean)=>void}) { return <><PageHeading kicker="SEU ESPAÇO" title="Sua jornada, suas escolhas." description="Um plano que respeita seu momento e evolui junto com você."/><div className="profile-card"><div className="profile-avatar">M</div><div><h2>Minha jornada</h2><p>Você está construindo um hábito para a vida.</p></div><span className="profile-badge"><Sparkles size={14}/> Em evolução</span></div><div className="settings-list"><div className="setting-row"><div><strong>Meu objetivo</strong><small>{goal}</small></div><button onClick={()=>setOnboarding(true)}>Editar <ChevronRight size={16}/></button></div><div className="setting-row"><div><strong>Nível de treino</strong><small>{level}</small></div><button onClick={()=>setOnboarding(true)}>Editar <ChevronRight size={16}/></button></div><div className="setting-row"><div><strong>Disponibilidade</strong><small>{days} por semana</small></div><button onClick={()=>setOnboarding(true)}>Editar <ChevronRight size={16}/></button></div></div><div className="privacy-note"><Heart size={18}/><span>Seu corpo, seu tempo, suas regras. Ajuste seu plano sempre que precisar.</span></div></>; }
