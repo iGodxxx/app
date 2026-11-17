@@ -184,7 +184,7 @@ function ExerciseDemo({name}:{name:string}) {
     : /respiração/.test(normalized) ? "Inspiração e expiração lentas"
     : /desaceleração/.test(normalized) ? "Redução gradual do ritmo"
     : "Movimento lento, controlado e sem impacto";
-  const movementClass = normalized.normalize("NFD").replace(/[\\u0300-\\u036f]/g, "").replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
+  const movementClass = normalized.normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
 
   return (
     <div className="exercise-demo exercise-video-demo">
