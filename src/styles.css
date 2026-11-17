@@ -890,3 +890,98 @@ body{font-family:Inter,"Avenir Next",ui-sans-serif,system-ui,sans-serif;letter-s
     transition: none !important;
   }
 }
+
+
+/* Estimativa de calorias por treino */
+.calorie-estimate-inline {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 9px;
+  margin: 13px 0 2px;
+  padding: 12px 14px;
+  border: 1px solid #f3d6df;
+  border-radius: 12px;
+  background: linear-gradient(105deg, #fff1f5, #fffaf8);
+  color: #8f4660;
+  font-size: 12px;
+  animation: ui-enter .4s ease both;
+}
+.calorie-estimate-inline svg { color: #e85f87; }
+.calorie-estimate-inline strong { color: #bd416b; font-weight: 850; }
+.weight-nudge {
+  display: block;
+  width: 100%;
+  margin: 12px 0 0;
+  padding: 10px 12px;
+  border: 1px dashed #e5b8c7;
+  border-radius: 11px;
+  background: #fff8fa;
+  color: #a14c69;
+  font-size: 11px;
+  text-align: center;
+  cursor: pointer;
+}
+.weight-input {
+  width: 100%;
+  height: 46px;
+  margin: 7px 0 4px;
+  padding: 0 13px;
+  border: 1px solid #e8dce0;
+  border-radius: 11px;
+  background: #fffdfa;
+  color: #302a34;
+  font-size: 14px;
+  outline: none;
+  transition: border-color .18s, box-shadow .18s;
+}
+.weight-input:focus {
+  border-color: #e58ba6;
+  box-shadow: 0 0 0 3px #e58ba61f;
+}
+.weight-help {
+  display: block;
+  margin: 1px 0 12px;
+  color: #91858d;
+  font-size: 10px;
+  line-height: 1.5;
+}
+.calorie-summary {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  margin: 18px 0 24px;
+  padding: 19px 22px;
+  border: 1px solid #f0dce2;
+  border-radius: 17px;
+  background: linear-gradient(110deg, #fff0f4 0%, #fffdfa 82%);
+  box-shadow: 0 7px 22px #34243208;
+  animation: ui-enter .5s ease both;
+}
+.calorie-summary-icon {
+  display: grid;
+  flex: 0 0 48px;
+  width: 48px;
+  height: 48px;
+  place-items: center;
+  border-radius: 15px;
+  background: #ffe0e9;
+  color: #d6537d;
+}
+.calorie-summary strong {
+  display: block;
+  margin: 3px 0;
+  color: #302a34;
+  font-size: 25px;
+  font-weight: 900;
+  letter-spacing: -1px;
+}
+.calorie-summary small {
+  display: block;
+  color: #91858d;
+  font-size: 10px;
+}
+@media(max-width:700px) {
+  .calorie-summary { padding: 15px; border-radius: 14px; }
+  .calorie-summary strong { font-size: 22px; }
+}
