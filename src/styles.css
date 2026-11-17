@@ -989,3 +989,69 @@ body{font-family:Inter,"Avenir Next",ui-sans-serif,system-ui,sans-serif;letter-s
 .calorie-estimate-inline span { display: flex; flex-wrap: wrap; align-items: baseline; gap: 4px; }
 .calorie-estimate-inline small { flex-basis: 100%; color: #99828c; font-size: 10px; }
 .calorie-summary strong { line-height: 1.2; }
+
+/* Indicador de calorias estimadas na tela inicial */
+.home-calorie-card {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin: 18px 0 24px;
+  padding: 17px 20px;
+  border: 1px solid #f0dce2;
+  border-radius: 17px;
+  background: linear-gradient(108deg, #fff0f4 0%, #fffdfa 78%);
+  box-shadow: 0 7px 22px #34243208;
+  animation: ui-enter .52s cubic-bezier(.2,.75,.25,1) both;
+}
+.home-calorie-icon {
+  display: grid;
+  flex: 0 0 48px;
+  width: 48px;
+  height: 48px;
+  place-items: center;
+  border-radius: 15px;
+  background: #ffe0e9;
+  color: #d6537d;
+}
+.home-calorie-copy { flex: 1; min-width: 0; }
+.home-calorie-copy strong {
+  display: block;
+  margin: 3px 0;
+  color: #302a34;
+  font-size: 23px;
+  font-weight: 900;
+  letter-spacing: -.8px;
+}
+.home-calorie-copy p {
+  margin: 0;
+  color: #91858d;
+  font-size: 10px;
+  line-height: 1.5;
+}
+.home-calorie-action {
+  display: inline-flex;
+  flex: 0 0 auto;
+  align-items: center;
+  gap: 6px;
+  border: 0;
+  border-radius: 10px;
+  padding: 10px 12px;
+  background: #e85f87;
+  color: #fff;
+  font-size: 10px;
+  font-weight: 800;
+  cursor: pointer;
+  transition: transform .18s ease, box-shadow .18s ease;
+}
+.home-calorie-action:hover { transform: translateY(-2px); box-shadow: 0 7px 16px #df638333; }
+@media(max-width:700px) {
+  .home-calorie-card { gap: 11px; margin: 14px 0 20px; padding: 14px; border-radius: 14px; flex-wrap: wrap; }
+  .home-calorie-icon { flex-basis: 42px; width: 42px; height: 42px; border-radius: 13px; }
+  .home-calorie-copy { flex-basis: calc(100% - 58px); }
+  .home-calorie-copy strong { font-size: 21px; }
+  .home-calorie-action { margin-left: auto; }
+}
+@media(prefers-reduced-motion:reduce) {
+  .home-calorie-card { animation: none !important; }
+  .home-calorie-action { transition: none !important; }
+}
