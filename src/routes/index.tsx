@@ -135,7 +135,11 @@ export function App() {
 
 function ExerciseDemo({name}:{name:string}) {
   const normalized = name.toLocaleLowerCase("pt-BR");
-  const video = /ponte de glúteos|elevação pélvica/.test(normalized)
+  const video = /agachamento livre|agachamento sumô|agachamento curto/.test(normalized)
+    ? { src: "https://videos.pexels.com/video-files/6525519/6525519-hd_1080_1920_30fps.mp4", label: "Agachamento com peso corporal", credit: "Polina Tankilevitch", source: "https://www.pexels.com/video/young-woman-exercising-6525519/" }
+    : /prancha baixa/.test(normalized)
+    ? { src: "https://videos.pexels.com/video-files/6437916/6437916-uhd_2160_3840_24fps.mp4", label: "Prancha baixa", credit: "Marta Wave", source: "https://www.pexels.com/video/woman-doing-a-plank-position-6437916/" }
+    : /ponte de glúteos|elevação pélvica/.test(normalized)
     ? { src: "https://videos.pexels.com/video-files/6525487/6525487-hd_1920_1080_25fps.mp4", label: "Ponte de glúteos", credit: "Polina Tankilevitch", source: "https://www.pexels.com/video/woman-doing-glute-bridge-exercise-6525487/" }
     : /prancha baixa/.test(normalized)
     ? { src: "https://videos.pexels.com/video-files/31035751/13265271_1920_1080_25fps.mp4", label: "Prancha baixa", credit: "Aliaksei Masiukevich", source: "https://www.pexels.com/video/woman-performing-plank-exercise-in-gym-31035751/" }
