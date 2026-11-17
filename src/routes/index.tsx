@@ -40,7 +40,7 @@ const nav: { label: Tab; icon: typeof Home }[] = [
   { label: "Início", icon: Home }, { label: "Treinos", icon: Dumbbell }, { label: "Explorar", icon: Search }, { label: "Evolução", icon: BarChart3 }, { label: "Perfil", icon: UserRound },
 ];
 
-function App() {
+export function App() {
   const [tab, setTab] = useState<Tab>("Início");
   const [active, setActive] = useState<Workout | null>(null);
   const [step, setStep] = useState(0);
