@@ -135,7 +135,7 @@ export function App() {
 
 function ExerciseDemo({name}:{name:string}) {
   const normalized = name.toLocaleLowerCase("pt-BR");
-  const video: { src: string; label: string; credit: string; source: string; youtube?: boolean } | null =
+  const video: { src: string; label: string; credit: string; source: string; youtube?: boolean; embed?: boolean } | null =
     /agachamento livre/.test(normalized)
     ? { src: "https://www.youtube-nocookie.com/embed/rYTjvY7dm9c", label: "Agachamento livre", credit: "YouTube", source: "https://youtu.be/rYTjvY7dm9c", youtube: true }
     : /agachamento isométrico/.test(normalized)
@@ -158,8 +158,58 @@ function ExerciseDemo({name}:{name:string}) {
     ? { src: "https://videos.pexels.com/video-files/6740158/6740158-hd_1920_1080_25fps.mp4", label: "Flexão inclinada", credit: "Mikhail Nilov", source: "https://www.pexels.com/video/a-woman-exercising-in-the-gym-6740158/" }
     : /prancha com joelhos/.test(normalized)
     ? { src: "https://videos.pexels.com/video-files/6437916/6437916-uhd_2160_3840_24fps.mp4", label: "Demonstração de prancha", credit: "Marta Wave", source: "https://www.pexels.com/video/woman-doing-a-plank-position-6437916/" }
-    : /ponte de glúteos/.test(normalized)
-    ? { src: "https://videos.pexels.com/video-files/6525487/6525487-hd_1920_1080_25fps.mp4", label: "Ponte de glúteos", credit: "Polina Tankilevitch", source: "https://www.pexels.com/video/woman-doing-glute-bridge-exercise-6525487/" }
+    : /aquecimento articular/.test(normalized)
+    ? { src: "https://www.youtube-nocookie.com/embed/oLu9kwDzBdg", label: "Aquecimento geral", credit: "NHS", source: "https://youtu.be/oLu9kwDzBdg", youtube: true }
+    : /dead bug/.test(normalized)
+    ? { src: "https://www.youtube-nocookie.com/embed/so_-E6xr_Ew", label: "Dead bug", credit: "University of Wyoming", source: "https://youtu.be/so_-E6xr_Ew", youtube: true }
+    : /bird dog/.test(normalized)
+    ? { src: "https://www.youtube-nocookie.com/embed/fC2oDpExXOo", label: "Bird dog", credit: "University of Wyoming", source: "https://youtu.be/fC2oDpExXOo", youtube: true }
+    : /abdominal curto/.test(normalized)
+    ? { src: "https://www.youtube-nocookie.com/embed/5uiKrMxaXFA", label: "Abdominal curto", credit: "University of Wyoming", source: "https://youtu.be/5uiKrMxaXFA", youtube: true }
+    : /respiração e relaxamento/.test(normalized)
+    ? { src: "https://www.youtube-nocookie.com/embed/C13Gw4XFfs0", label: "Respiração abdominal", credit: "NHS Inform", source: "https://youtu.be/C13Gw4XFfs0", youtube: true }
+    : /mobilidade de ombros/.test(normalized)
+    ? { src: "https://player.vimeo.com/video/384087789", label: "Mobilidade de ombros e braços", credit: "Strive & Uplift", source: "https://vimeo.com/384087789", embed: true }
+    : /flexão na parede/.test(normalized)
+    ? { src: "https://www.youtube-nocookie.com/embed/zQjJuQwaiAc", label: "Flexão na parede", credit: "The Diabetes Resistance", source: "https://youtu.be/zQjJuQwaiAc", youtube: true }
+    : /prancha alta com toque/.test(normalized)
+    ? { src: "https://www.youtube-nocookie.com/embed/8WrpdRpIdGg", label: "Prancha alta com toque", credit: "University of Maryland", source: "https://youtu.be/8WrpdRpIdGg", youtube: true }
+    : /prancha alta/.test(normalized)
+    ? { src: "https://www.youtube-nocookie.com/embed/5rGrXCFvfiY", label: "Prancha alta", credit: "University of Maryland", source: "https://youtu.be/5rGrXCFvfiY", youtube: true }
+    : /superman/.test(normalized)
+    ? { src: "https://www.youtube-nocookie.com/embed/uexOGyxLr7E", label: "Superman", credit: "Cleveland Clinic", source: "https://youtu.be/uexOGyxLr7E", youtube: true }
+    : /alongamento peitoral/.test(normalized)
+    ? { src: "https://www.youtube-nocookie.com/embed/nNWfX6wrHrA", label: "Alongamento peitoral", credit: "BCCSA", source: "https://youtu.be/nNWfX6wrHrA", youtube: true }
+    : /círculos de ombros/.test(normalized)
+    ? { src: "https://www.youtube-nocookie.com/embed/X7NtqY9kCCM", label: "Rotação dos ombros", credit: "Leicestershire Partnership NHS Trust", source: "https://youtu.be/X7NtqY9kCCM", youtube: true }
+    : /gato e vaca/.test(normalized)
+    ? { src: "https://www.youtube-nocookie.com/embed/PGDnZ-sCC_o", label: "Gato e vaca", credit: "Doctor O'Donovan", source: "https://youtu.be/PGDnZ-sCC_o", youtube: true }
+    : /mobilidade de quadril/.test(normalized)
+    ? { src: "https://player.vimeo.com/video/660518448", label: "Círculos de quadril", credit: "Strive & Uplift", source: "https://vimeo.com/660518448", embed: true }
+    : /alongamento de posterior|alongamento de pernas/.test(normalized)
+    ? { src: "https://www.youtube-nocookie.com/embed/xx5WTWo_ado", label: "Alongamento posterior da coxa", credit: "Brighton Physiotherapist", source: "https://youtu.be/xx5WTWo_ado", youtube: true }
+    : /respiração profunda/.test(normalized)
+    ? { src: "https://www.youtube-nocookie.com/embed/IYTZwBzjNC0", label: "Respiração consciente", credit: "NHS Inform", source: "https://youtu.be/IYTZwBzjNC0", youtube: true }
+    : /marcha estacionária/.test(normalized)
+    ? { src: "https://www.youtube-nocookie.com/embed/Ih-JqDrOXBQ", label: "Marcha com elevação dos joelhos", credit: "OriGym", source: "https://youtu.be/Ih-JqDrOXBQ", youtube: true }
+    : /passo lateral/.test(normalized)
+    ? { src: "https://www.youtube-nocookie.com/embed/L9FzqnlmjCE", label: "Passo lateral", credit: "MedStar Health", source: "https://youtu.be/L9FzqnlmjCE", youtube: true }
+    : /agachamento curto/.test(normalized)
+    ? { src: "https://www.youtube-nocookie.com/embed/jaPzvgZFQBI", label: "Agachamento parcial", credit: "Massachusetts General Hospital", source: "https://youtu.be/jaPzvgZFQBI", youtube: true }
+    : /elevação alternada de joelhos/.test(normalized)
+    ? { src: "https://www.youtube-nocookie.com/embed/-aQbL65YHR0", label: "Elevação alternada de joelhos", credit: "OriGym", source: "https://youtu.be/-aQbL65YHR0", youtube: true }
+    : /desaceleração/.test(normalized)
+    ? { src: "https://www.youtube-nocookie.com/embed/Z_d4rVxZTmY", label: "Desaceleração e alongamento", credit: "NHS", source: "https://youtu.be/Z_d4rVxZTmY", youtube: true }
+    : /coice em quatro apoios/.test(normalized)
+    ? { src: "https://www.youtube-nocookie.com/embed/J2DTx5CKdqk", label: "Extensão de quadril em quatro apoios", credit: "Physical Therapy First", source: "https://youtu.be/J2DTx5CKdqk", youtube: true }
+    : /abdução lateral/.test(normalized)
+    ? { src: "https://www.youtube-nocookie.com/embed/g9FtnmsIYgI", label: "Abdução lateral de quadril", credit: "Baptist Health", source: "https://youtu.be/g9FtnmsIYgI", youtube: true }
+    : /alongamento de glúteos/.test(normalized)
+    ? { src: "https://www.youtube-nocookie.com/embed/6G-bKam5tyk", label: "Alongamento de glúteos", credit: "Doctor O'Donovan", source: "https://youtu.be/6G-bKam5tyk", youtube: true }
+    : /agachamento com pausa/.test(normalized)
+    ? { src: "https://player.vimeo.com/video/476048891", label: "Agachamento com pausa", credit: "Luke Tarbatt", source: "https://vimeo.com/476048891", embed: true }
+    : /afundo reverso/.test(normalized)
+    ? { src: "https://www.youtube-nocookie.com/embed/gd1a7i7-CMY", label: "Afundo reverso", credit: "University of Wyoming", source: "https://youtu.be/gd1a7i7-CMY", youtube: true }
     : null;
 
   const kind = /ponte|elevação pélvica/.test(normalized) ? "bridge"
@@ -213,14 +263,14 @@ function ExerciseDemo({name}:{name:string}) {
       </div>
       {video ? (
         <>
-          {video.youtube ? (
+          {video.youtube || video.embed ? (
             <iframe className="exercise-real-video" src={video.src} title={video.label} loading="lazy" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerPolicy="strict-origin-when-cross-origin" allowFullScreen />
           ) : (
             <video className="exercise-real-video" src={video.src} autoPlay loop muted playsInline controls preload="metadata" aria-label={video.label} />
           )}
           <div className="demo-footer">
             <strong>{video.label}</strong>
-            <span>Vídeo por {video.credit} · <a href={video.source} target="_blank" rel="noreferrer">Fonte Pexels</a></span>
+            <span>Vídeo por {video.credit} · <a href={video.source} target="_blank" rel="noreferrer">Fonte {video.youtube ? "YouTube" : video.embed ? "Vimeo" : "Pexels"}</a></span>
           </div>
         </>
       ) : (
