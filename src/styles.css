@@ -1332,3 +1332,65 @@ body{font-family:Inter,"Avenir Next",ui-sans-serif,system-ui,sans-serif;letter-s
 @media(prefers-reduced-motion:reduce) {
   .recipe-card, .bonus-card { transition: none !important; }
 }
+
+.day-plan-list {
+  display: grid;
+  grid-template-columns: repeat(3,minmax(0,1fr));
+  gap: 11px;
+  margin: 17px 0 29px;
+}
+.day-plan-item {
+  min-width: 0;
+  padding: 14px;
+  border: 1px solid #e9e1d8;
+  border-radius: 14px;
+  background: #fffdfa;
+}
+.day-plan-item.is-done { border-color: #cfe2d3; background: #f4faf4; }
+.day-plan-item.is-unlocked { border-color: #edb3c5; background: #fff8fa; }
+.day-plan-item.is-locked { opacity: .72; }
+.day-plan-meta {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 10px;
+  color: #be5477;
+  font-size: 9px;
+  font-weight: 850;
+  letter-spacing: .5px;
+}
+.day-plan-meta small { color: #8f858c; font-size: 8px; letter-spacing: 0; }
+.day-plan-item > strong {
+  display: block;
+  min-height: 35px;
+  color: #302a34;
+  font-size: 12px;
+  font-weight: 850;
+  line-height: 1.45;
+}
+.day-plan-item > p {
+  margin: 7px 0 11px;
+  color: #8b8088;
+  font-size: 9px;
+}
+.day-plan-item > button {
+  width: 100%;
+  padding: 8px 9px;
+  border: 0;
+  border-radius: 9px;
+  background: #e85f87;
+  color: white;
+  font-size: 9px;
+  font-weight: 800;
+  cursor: pointer;
+}
+.day-plan-item > button:disabled { background: #eee8e8; color: #91858d; cursor: not-allowed; }
+@media(max-width:900px) {
+  .day-plan-list { grid-template-columns: repeat(2,minmax(0,1fr)); }
+}
+@media(max-width:700px) {
+  .day-plan-list { grid-template-columns: 1fr; gap: 8px; }
+  .day-plan-item { padding: 12px; }
+  .day-plan-item > strong { min-height: 0; }
+}
