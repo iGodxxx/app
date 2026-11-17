@@ -122,7 +122,7 @@ export function App() {
       <main className="main-area">
         <header className="topbar"><div className="mobile-brand">✿ calisteniaasiática</div><div className="breadcrumb">Sua jornada <span>/</span> {tab}</div><div className="top-actions"><span className="streak"><Flame size={16}/> {done.length} treinos</span><button className="icon-button" aria-label="Perfil" onClick={() => setTab("Perfil")}><UserRound size={19}/></button></div></header>
         <div className="content">
-          {tab === "Início" && <HomePage done={done} history={history} start={start} setTab={setTab} unlockedDay={unlockedDay} completedDays={completedDays} nextUnlockAt={nextUnlockAt} dayWorkout={dayWorkout} />}
+          {tab === "Início" && <HomePage done={done} history={history} start={start} setTab={setTab} unlockedDay={unlockedDay} completedDays={completedDays} nextUnlockAt={nextUnlockAt} dayWorkout={dayWorkout} weightKg={weightKg} />}
           {tab === "Treinos" && <WorkoutPage items={filtered} query={query} setQuery={setQuery} start={start} unlockedDay={unlockedDay} completedDays={completedDays} nextUnlockAt={nextUnlockAt} dayWorkout={dayWorkout} />}
           {tab === "Explorar" && <ExplorePage setGoal={setGoal} goal={goal} setTab={setTab} start={start} challengeStarted={challengeStarted} challengeDay={challengeDay} onStartChallenge={() => { setChallengeStarted(true); setTab("Treinos"); }} />}
           {tab === "Evolução" && <ProgressPage done={done} history={history} />}
@@ -386,12 +386,17 @@ function exerciseGuidance(name: string) {
 
 function PageHeading({kicker,title,description}:{kicker:string;title:string;description:string}) { return <div className="page-heading"><span className="eyebrow">{kicker}</span><h1>{title}</h1><p>{description}</p></div>; }
 
-function HomePage({done,history,start,setTab,unlockedDay,completedDays,nextUnlockAt,dayWorkout}:{done:string[];history:WorkoutSession[];start:(w:Workout,day?:number)=>void;setTab:(t:Tab)=>void;unlockedDay:number;completedDays:number[];nextUnlockAt:string|null;dayWorkout:(day:number)=>Workout}) {
+function HomePage({done,history,start,setTab,unlockedDay,completedDays,nextUnlockAt,dayWorkout,weightKg}:{done:string[];history:WorkoutSession[];start:(w:Workout,day?:number)=>void;setTab:(t:Tab)=>void;unlockedDay:number;completedDays:number[];nextUnlockAt:string|null;dayWorkout:(day:number)=>Workout;weightKg:number|null}) {
   const totalSessions = history.length || done.length;
   const totalMinutes = history.length ? history.reduce((sum, session) => sum + session.duration, 0) : done.length * 18;
   const current = unlockedDay;
+  const todayWorkout = dayWorkout(current);
+  const calorieRange = weightKg !== null && weightKg >= 30 && weightKg <= 250
+    ? estimateWorkoutCalories(todayWorkout, Number.parseInt(todayWorkout.time, 10) || 0, weightKg)
+    : null;
   return <><div className="welcome-row"><div><span className="eyebrow">SUA JORNADA COMEÇA NO SEU RITMO</span><h1>Olá, que bom ter você <em>por aqui.</em></h1><p>Um treino por dia. Cada etapa libera a próxima no seu tempo.</p></div><div className="welcome-flower">✿</div></div>
     <section className="hero-card"><div className="hero-copy"><span className="hero-tag"><Sparkles size={14}/> DIA {current} DA SUA JORNADA</span><h2>Um pouco melhor<br/>a cada movimento.</h2><p>{nextUnlockAt ? "Seu próximo treino será liberado 24 horas após a conclusão do último." : "Seu treino de hoje está pronto. Vamos começar?"}</p><button className="button-light" disabled={completedDays.includes(current)} onClick={()=>start(dayWorkout(current),current)}>{completedDays.includes(current)?"Aguardando próxima liberação":"Começar treino"} <ArrowRight size={17}/></button></div><div className="hero-illustration"><div className="sun-disc"/><div className="hero-person">♀</div><span className="hero-caption">FORÇA • EQUILÍBRIO • VOCÊ</span></div></section>
+    <section className="home-calorie-card"><div className="home-calorie-icon"><Flame size={23}/></div><div className="home-calorie-copy"><span className="eyebrow">GASTO CALÓRICO ESTIMADO</span><strong>{calorieRange ? `~${calorieRange.min}–${calorieRange.max} kcal` : "Personalize sua estimativa"}</strong><p>{calorieRange ? `${todayWorkout.title} · ${todayWorkout.time} · Faixa aproximada conforme intensidade` : "Informe seu peso corporal no perfil para calcular uma faixa para o treino de hoje."}</p></div><button className="home-calorie-action" onClick={()=>setTab(calorieRange ? "Treinos" : "Perfil")}>{calorieRange ? "Ver treino" : "Informar peso"} <ArrowRight size={15}/></button></section>
     <div className="stats-grid"><Stat icon={Flame} label="Sua jornada" value={totalSessions ? totalSessions + " treinos" : "Comece hoje"} note="Continue assim!"/><Stat icon={Clock3} label="Tempo em movimento" value={totalMinutes + " min"} note="Cada minuto conta"/><Stat icon={Award} label="Dias concluídos" value={String(completedDays.length)} note="Sua evolução começa aqui"/></div>
     <div className="section-heading"><div><span className="eyebrow">SEU CALENDÁRIO</span><h2>Jornada de 31 dias</h2></div><button className="text-link" onClick={()=>setTab("Treinos")}>Ver calendário <ArrowRight size={16}/></button></div>
     <JourneyCalendar unlockedDay={unlockedDay} completedDays={completedDays} nextUnlockAt={nextUnlockAt} dayWorkout={dayWorkout} start={start}/>
