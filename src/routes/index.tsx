@@ -153,6 +153,39 @@ function ExerciseDemo({name}:{name:string}) {
     : /alongamento|mobilidade|círculos|gato|respiração|desaceleração/.test(normalized) ? "stretch"
     : "standing";
 
+  const movement = /aquecimento articular/.test(normalized) ? "Aquecimento: movimentos articulares"
+    : /agachamento sumô/.test(normalized) ? "Agachamento com base ampla"
+    : /agachamento isométrico/.test(normalized) ? "Sustentação na posição de agachamento"
+    : /agachamento com pausa/.test(normalized) ? "Agachamento com pausa no ponto baixo"
+    : /agachamento/.test(normalized) ? "Flexão e extensão dos joelhos e quadril"
+    : /afundo/.test(normalized) ? "Passo para trás e descida controlada"
+    : /ponte unilateral/.test(normalized) ? "Elevação de quadril com uma perna"
+    : /ponte|elevação pélvica/.test(normalized) ? "Elevação e descida do quadril"
+    : /flexão na parede/.test(normalized) ? "Flexão com apoio na parede"
+    : /flexão inclinada/.test(normalized) ? "Flexão com mãos em apoio elevado"
+    : /flexão tradicional/.test(normalized) ? "Flexão de braços no solo"
+    : /prancha lateral/.test(normalized) ? "Sustentação lateral do tronco"
+    : /prancha/.test(normalized) ? "Sustentação do corpo em linha reta"
+    : /dead bug/.test(normalized) ? "Alternância de braço e perna opostos"
+    : /bird dog/.test(normalized) ? "Extensão de braço e perna opostos"
+    : /abdominal curto/.test(normalized) ? "Pequena elevação dos ombros"
+    : /coice/.test(normalized) ? "Extensão de uma perna para trás"
+    : /abdução lateral/.test(normalized) ? "Elevação lateral da perna"
+    : /superman/.test(normalized) ? "Elevação suave de braços e pernas"
+    : /marcha estacionária/.test(normalized) ? "Marcha alternada sem sair do lugar"
+    : /passo lateral/.test(normalized) ? "Passos controlados para os lados"
+    : /elevação alternada de joelhos/.test(normalized) ? "Elevação alternada dos joelhos"
+    : /gato e vaca/.test(normalized) ? "Alternância entre arredondar e estender a coluna"
+    : /círculos de ombros|mobilidade de ombros/.test(normalized) ? "Rotação suave dos ombros"
+    : /mobilidade de quadril/.test(normalized) ? "Movimento circular e controlado do quadril"
+    : /alongamento de posterior|alongamento de pernas/.test(normalized) ? "Alongamento suave da parte posterior das pernas"
+    : /alongamento peitoral/.test(normalized) ? "Abertura suave da região do peito"
+    : /alongamento de glúteos/.test(normalized) ? "Alongamento confortável dos glúteos"
+    : /respiração/.test(normalized) ? "Inspiração e expiração lentas"
+    : /desaceleração/.test(normalized) ? "Redução gradual do ritmo"
+    : "Movimento lento, controlado e sem impacto";
+  const movementClass = normalized.normalize("NFD").replace(/[\\u0300-\\u036f]/g, "").replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
+
   return (
     <div className="exercise-demo exercise-video-demo">
       <div className="demo-heading">
@@ -169,7 +202,7 @@ function ExerciseDemo({name}:{name:string}) {
         </>
       ) : (
         <>
-          <div className={`demo-stage demo-stage-${kind}`} role="img" aria-label={`Animação demonstrativa de ${name}`}>
+          <div className={`demo-stage demo-stage-${kind} demo-movement-${movementClass}`} role="img" aria-label={`Animação demonstrativa de ${name}`}>
             <div className="demo-halo"/>
             <svg className={`demo-visual figure-${kind}`} viewBox="0 0 360 190" aria-hidden="true">
               <defs>
@@ -223,11 +256,11 @@ function ExerciseDemo({name}:{name:string}) {
               )}
               <path className="demo-motion-arrow" d={kind === "bridge" ? "M260 137q18-22 0-42m0 0-7 8m7-8 7 8" : kind === "squat" || kind === "lunge" ? "M250 62q17 17 0 34m0 0-7-8m7 8 7-8" : "M260 88q18-16 0-32m0 0-7 8m7-8 7 8"}/>
             </svg>
-            <span className="demo-step-pill"><span>●</span> MOVIMENTO EM CICLO</span>
+            <span className="demo-step-pill"><span>●</span> {movement}</span>
           </div>
           <div className="demo-footer">
-            <strong>Exemplo visual: {name}</strong>
-            <span>Animação ilustrativa para acompanhar as instruções de execução.</span>
+            <strong>{name}</strong>
+            <span>{movement}. Animação ilustrativa; siga também as instruções escritas.</span>
           </div>
         </>
       )}
