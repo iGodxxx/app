@@ -985,3 +985,7 @@ body{font-family:Inter,"Avenir Next",ui-sans-serif,system-ui,sans-serif;letter-s
   .calorie-summary { padding: 15px; border-radius: 14px; }
   .calorie-summary strong { font-size: 22px; }
 }
+
+.calorie-estimate-inline span { display: flex; flex-wrap: wrap; align-items: baseline; gap: 4px; }
+.calorie-estimate-inline small { flex-basis: 100%; color: #99828c; font-size: 10px; }
+.calorie-summary strong { line-height: 1.2; }
