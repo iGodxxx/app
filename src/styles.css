@@ -691,3 +691,202 @@ body{font-family:Inter,"Avenir Next",ui-sans-serif,system-ui,sans-serif;letter-s
 @keyframes demo-breath-cycle{0%,100%{transform:scale(1)}50%{transform:scale(1.025)}}
 @keyframes demo-warmup-cycle{0%,100%{transform:rotate(-1deg)}50%{transform:rotate(1deg)}}
 @media(prefers-reduced-motion:reduce){.demo-stage .figure{animation:none!important}}
+
+
+/* Microinterações e animações de interface */
+.content > .welcome-row,
+.content > .page-heading,
+.content > .hero-card,
+.content > .stats-grid,
+.content > .section-heading,
+.content > .journey-panel,
+.content > .workout-grid,
+.content > .search-box,
+.content > .goal-grid,
+.content > .challenge-card,
+.content > .progress-panel,
+.content > .profile-card,
+.content > .settings-list,
+.content > .bottom-note {
+  animation: ui-enter .58s cubic-bezier(.2,.75,.25,1) both;
+}
+.content > .hero-card { animation-delay: .06s; }
+.content > .stats-grid { animation-delay: .12s; }
+.content > .journey-panel { animation-delay: .18s; }
+.content > .workout-grid { animation-delay: .14s; }
+.content > .challenge-card { animation-delay: .16s; }
+
+@keyframes ui-enter {
+  from { opacity: 0; transform: translateY(14px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.hero-illustration .sun-disc {
+  animation: sun-breathe 5.5s ease-in-out infinite;
+  transform-origin: center;
+}
+.hero-illustration .hero-person {
+  animation: person-float 4.2s ease-in-out infinite;
+  transform-origin: center bottom;
+}
+.welcome-flower {
+  animation: flower-drift 5.8s ease-in-out infinite;
+  transform-origin: center;
+}
+.brand-mark {
+  animation: brand-glow 4.8s ease-in-out infinite;
+}
+@keyframes sun-breathe {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.045); }
+}
+@keyframes person-float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-7px); }
+}
+@keyframes flower-drift {
+  0%, 100% { transform: translateY(0) rotate(-12deg); }
+  50% { transform: translateY(-6px) rotate(-5deg); }
+}
+@keyframes brand-glow {
+  0%, 100% { box-shadow: 0 8px 22px #ff6f9838; }
+  50% { box-shadow: 0 8px 27px #ff6f9866; }
+}
+
+.stat-card, .workout-card, .goal-card, .journey-day,
+.challenge-card, .history-row, .side-link, .mobile-link {
+  transition: transform .22s ease, box-shadow .22s ease, background-color .22s ease, border-color .22s ease;
+}
+.stat-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 12px 24px #34243212;
+}
+.stat-card:hover .stat-top svg {
+  animation: icon-pop .38s ease;
+}
+.workout-card {
+  animation: card-arrive .52s cubic-bezier(.2,.75,.25,1) both;
+}
+.workout-card:nth-child(2) { animation-delay: .05s; }
+.workout-card:nth-child(3) { animation-delay: .1s; }
+.workout-card:nth-child(4) { animation-delay: .15s; }
+.workout-card:nth-child(5) { animation-delay: .2s; }
+.workout-card:nth-child(6) { animation-delay: .25s; }
+.workout-card:nth-child(7) { animation-delay: .3s; }
+.workout-card:nth-child(8) { animation-delay: .35s; }
+@keyframes card-arrive {
+  from { opacity: 0; transform: translateY(12px) scale(.985); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
+}
+.workout-art .art-symbol {
+  transition: transform .35s cubic-bezier(.2,.75,.25,1);
+}
+.workout-card:hover .art-symbol {
+  transform: translateY(-4px) rotate(-7deg) scale(1.04);
+}
+@keyframes icon-pop {
+  0% { transform: scale(1); }
+  45% { transform: scale(1.2) rotate(-7deg); }
+  100% { transform: scale(1); }
+}
+
+.button-primary, .button-light, .button-secondary, .card-action, .text-link, .icon-button {
+  transition: transform .18s ease, box-shadow .18s ease, filter .18s ease;
+}
+.button-primary:hover, .button-light:hover {
+  transform: translateY(-2px);
+  filter: saturate(1.08);
+  box-shadow: 0 9px 22px #df638344;
+}
+.button-secondary:hover, .icon-button:hover {
+  transform: translateY(-1px);
+}
+.button-primary:active, .button-light:active, .button-secondary:active,
+.card-action:active, .text-link:active, .icon-button:active {
+  transform: scale(.97);
+}
+.side-link.selected svg, .mobile-link.active svg {
+  animation: nav-arrive .34s ease-out;
+}
+@keyframes nav-arrive {
+  0% { transform: scale(.78); }
+  65% { transform: scale(1.16); }
+  100% { transform: scale(1); }
+}
+
+.journey-day.journey-unlocked {
+  animation: unlocked-breathe 3.6s ease-in-out infinite;
+}
+.journey-day.journey-done svg {
+  animation: check-arrive .35s ease-out;
+}
+@keyframes unlocked-breathe {
+  0%, 100% { box-shadow: 0 0 0 0 #ed9ab200; }
+  50% { box-shadow: 0 0 0 4px #ed9ab226; }
+}
+@keyframes check-arrive {
+  0% { opacity: 0; transform: scale(.55) rotate(-18deg); }
+  100% { opacity: 1; transform: scale(1) rotate(0); }
+}
+.journey-progress span {
+  position: relative;
+  overflow: hidden;
+}
+.journey-progress span::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(105deg, transparent 25%, #ffffff75 50%, transparent 75%);
+  transform: translateX(-110%);
+  animation: progress-shine 3.8s ease-in-out infinite;
+}
+@keyframes progress-shine {
+  0%, 35% { transform: translateX(-110%); }
+  70%, 100% { transform: translateX(110%); }
+}
+
+.challenge-days span {
+  animation: day-pop .42s cubic-bezier(.2,.75,.25,1) both;
+}
+.challenge-days span:nth-child(2) { animation-delay: .04s; }
+.challenge-days span:nth-child(3) { animation-delay: .08s; }
+.challenge-days span:nth-child(4) { animation-delay: .12s; }
+.challenge-days span:nth-child(5) { animation-delay: .16s; }
+.challenge-days span:nth-child(6) { animation-delay: .2s; }
+.challenge-days span:nth-child(7) { animation-delay: .24s; }
+@keyframes day-pop {
+  from { opacity: 0; transform: translateY(7px) scale(.88); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+.demo-live i {
+  animation: live-pulse 1.8s ease-in-out infinite;
+}
+@keyframes live-pulse {
+  0%, 100% { box-shadow: 0 0 0 0 #e85f8744; }
+  50% { box-shadow: 0 0 0 5px #e85f8700; }
+}
+.workout-modal, .settings-modal {
+  animation: modal-arrive .28s cubic-bezier(.2,.75,.25,1) both;
+}
+@keyframes modal-arrive {
+  from { opacity: 0; transform: translateY(12px) scale(.985); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .content > *, .workout-card, .challenge-days span,
+  .hero-illustration .sun-disc, .hero-illustration .hero-person,
+  .welcome-flower, .brand-mark, .journey-day.journey-unlocked,
+  .journey-progress span::after, .demo-live i,
+  .workout-modal, .settings-modal,
+  .side-link.selected svg, .mobile-link.active svg {
+    animation: none !important;
+  }
+  .stat-card, .workout-card, .goal-card, .journey-day,
+  .challenge-card, .history-row, .side-link, .mobile-link,
+  .button-primary, .button-light, .button-secondary,
+  .card-action, .text-link, .icon-button {
+    transition: none !important;
+  }
+}
