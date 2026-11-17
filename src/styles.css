@@ -627,3 +627,67 @@ body{font-family:Inter,"Avenir Next",ui-sans-serif,system-ui,sans-serif;letter-s
 @media(prefers-reduced-motion:reduce){
   .figure-cardio,.figure-standing,.figure-core,.figure-bridge,.figure-floor,.figure-birddog,.figure-squat,.figure-lunge,.figure-stretch{animation:none!important}
 }
+
+
+/* Ciclos específicos para cada exercício da biblioteca */
+.demo-movement-agachamento-livre .figure,
+.demo-movement-agachamento-sumo .figure,
+.demo-movement-agachamento-curto .figure{animation:demo-squat-cycle 2.8s ease-in-out infinite}
+.demo-movement-agachamento-isometrico .figure,
+.demo-movement-agachamento-com-pausa .figure{animation:demo-hold-cycle 3.2s ease-in-out infinite}
+.demo-movement-afundo-alternado .figure,
+.demo-movement-afundo-reverso .figure{animation:demo-lunge-cycle 2.8s ease-in-out infinite}
+.demo-movement-ponte-de-gluteos .figure,
+.demo-movement-elevacao-pelvica .figure{animation:demo-bridge-cycle 2.6s ease-in-out infinite}
+.demo-movement-ponte-unilateral .figure{animation:demo-single-bridge-cycle 2.8s ease-in-out infinite}
+.demo-movement-flexao-inclinada .figure,
+.demo-movement-flexao-na-parede .figure,
+.demo-movement-flexao-tradicional .figure{animation:demo-push-cycle 2.8s ease-in-out infinite}
+.demo-movement-prancha-baixa .figure,
+.demo-movement-prancha-com-joelhos .figure,
+.demo-movement-prancha-alta .figure,
+.demo-movement-prancha-alta-com-toque .figure,
+.demo-movement-prancha-lateral .figure{animation:demo-plank-cycle 3.2s ease-in-out infinite}
+.demo-movement-dead-bug .figure{animation:demo-deadbug-cycle 3s ease-in-out infinite}
+.demo-movement-bird-dog .figure{animation:demo-bird-dog-cycle 3s ease-in-out infinite}
+.demo-movement-abdominal-curto .figure{animation:demo-crunch-cycle 2.6s ease-in-out infinite}
+.demo-movement-coice-em-quatro-apoios .figure{animation:demo-kick-cycle 2.8s ease-in-out infinite}
+.demo-movement-abducao-lateral .figure{animation:demo-side-leg-cycle 2.8s ease-in-out infinite}
+.demo-movement-superman .figure{animation:demo-superman-cycle 2.8s ease-in-out infinite}
+.demo-movement-marcha-estacionaria .figure,
+.demo-movement-elevacao-alternada-de-joelhos .figure{animation:demo-march-cycle 1.8s ease-in-out infinite}
+.demo-movement-passo-lateral .figure{animation:demo-side-step-cycle 2.2s ease-in-out infinite}
+.demo-movement-gato-e-vaca .figure{animation:demo-cat-cow-cycle 3.4s ease-in-out infinite}
+.demo-movement-circulos-de-ombros .figure,
+.demo-movement-mobilidade-de-ombros .figure{animation:demo-shoulder-cycle 3s ease-in-out infinite}
+.demo-movement-mobilidade-de-quadril .figure{animation:demo-hip-cycle 3.2s ease-in-out infinite}
+.demo-movement-alongamento-de-posterior .figure,
+.demo-movement-alongamento-de-pernas .figure,
+.demo-movement-alongamento-peitoral .figure,
+.demo-movement-alongamento-de-gluteos .figure{animation:demo-stretch-cycle 3.4s ease-in-out infinite}
+.demo-movement-respiracao-e-relaxamento .figure,
+.demo-movement-respiracao-profunda .figure{animation:demo-breath-cycle 4s ease-in-out infinite}
+.demo-movement-aquecimento-articular .figure,
+.demo-movement-desaceleracao .figure{animation:demo-warmup-cycle 3.2s ease-in-out infinite}
+@keyframes demo-squat-cycle{0%,100%{transform:translateY(0) scaleY(1)}50%{transform:translateY(8px) scaleY(.94)}}
+@keyframes demo-hold-cycle{0%,100%{transform:translateY(7px) scaleY(.94)}50%{transform:translateY(6px) scaleY(.95)}}
+@keyframes demo-lunge-cycle{0%,100%{transform:translateX(-3px) translateY(0)}50%{transform:translateX(5px) translateY(5px)}}
+@keyframes demo-bridge-cycle{0%,100%{transform:translateY(6px)}50%{transform:translateY(-7px)}}
+@keyframes demo-single-bridge-cycle{0%,100%{transform:translateY(5px) rotate(0)}50%{transform:translateY(-6px) rotate(-2deg)}}
+@keyframes demo-push-cycle{0%,100%{transform:translateY(0)}50%{transform:translateY(6px)}}
+@keyframes demo-plank-cycle{0%,100%{transform:translateY(0)}50%{transform:translateY(-1px)}}
+@keyframes demo-deadbug-cycle{0%,100%{transform:rotate(0)}50%{transform:rotate(-3deg)}}
+@keyframes demo-bird-dog-cycle{0%,100%{transform:translateX(0)}50%{transform:translateX(4px)}}
+@keyframes demo-crunch-cycle{0%,100%{transform:translateY(0) rotate(0)}50%{transform:translateY(-5px) rotate(-2deg)}}
+@keyframes demo-kick-cycle{0%,100%{transform:translateY(0)}50%{transform:translateY(-5px) translateX(5px)}}
+@keyframes demo-side-leg-cycle{0%,100%{transform:translateX(0)}50%{transform:translateX(6px)}}
+@keyframes demo-superman-cycle{0%,100%{transform:translateY(2px)}50%{transform:translateY(-5px)}}
+@keyframes demo-march-cycle{0%,100%{transform:translateY(0)}50%{transform:translateY(-5px)}}
+@keyframes demo-side-step-cycle{0%,100%{transform:translateX(-4px)}50%{transform:translateX(5px)}}
+@keyframes demo-cat-cow-cycle{0%,100%{transform:rotate(-2deg)}50%{transform:rotate(2deg)}}
+@keyframes demo-shoulder-cycle{0%,100%{transform:rotate(-1deg)}50%{transform:rotate(1deg)}}
+@keyframes demo-hip-cycle{0%,100%{transform:rotate(-2deg)}50%{transform:rotate(2deg)}}
+@keyframes demo-stretch-cycle{0%,100%{transform:translateY(0) rotate(-1deg)}50%{transform:translateY(-3px) rotate(1deg)}}
+@keyframes demo-breath-cycle{0%,100%{transform:scale(1)}50%{transform:scale(1.025)}}
+@keyframes demo-warmup-cycle{0%,100%{transform:rotate(-1deg)}50%{transform:rotate(1deg)}}
+@media(prefers-reduced-motion:reduce){.demo-stage .figure{animation:none!important}}
