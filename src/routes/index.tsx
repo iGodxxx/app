@@ -135,16 +135,31 @@ export function App() {
 
 function ExerciseDemo({name}:{name:string}) {
   const normalized = name.toLocaleLowerCase("pt-BR");
-  const video = /agachamento livre|agachamento sumô|agachamento curto/.test(normalized)
+  const video: { src: string; label: string; credit: string; source: string; youtube?: boolean } | null =
+    /agachamento livre/.test(normalized)
+    ? { src: "https://www.youtube-nocookie.com/embed/rYTjvY7dm9c", label: "Agachamento livre", credit: "YouTube", source: "https://youtu.be/rYTjvY7dm9c", youtube: true }
+    : /agachamento isométrico/.test(normalized)
+    ? { src: "https://www.youtube-nocookie.com/embed/p7B3hja6s4U", label: "Agachamento isométrico", credit: "YouTube", source: "https://youtu.be/p7B3hja6s4U", youtube: true }
+    : /agachamento sumô/.test(normalized)
     ? { src: "https://videos.pexels.com/video-files/6525519/6525519-hd_1080_1920_30fps.mp4", label: "Agachamento com peso corporal", credit: "Polina Tankilevitch", source: "https://www.pexels.com/video/young-woman-exercising-6525519/" }
-    : /prancha baixa/.test(normalized)
-    ? { src: "https://videos.pexels.com/video-files/6437916/6437916-uhd_2160_3840_24fps.mp4", label: "Prancha baixa", credit: "Marta Wave", source: "https://www.pexels.com/video/woman-doing-a-plank-position-6437916/" }
+    : /afundo alternado/.test(normalized)
+    ? { src: "https://www.youtube-nocookie.com/embed/9jJWonbDUb4", label: "Avanço alternado", credit: "YouTube", source: "https://youtu.be/9jJWonbDUb4", youtube: true }
+    : /ponte unilateral/.test(normalized)
+    ? { src: "https://www.youtube-nocookie.com/embed/tcW8Vk6fejw", label: "Elevação de quadril unilateral", credit: "YouTube", source: "https://youtu.be/tcW8Vk6fejw", youtube: true }
     : /ponte de glúteos|elevação pélvica/.test(normalized)
-    ? { src: "https://videos.pexels.com/video-files/6525487/6525487-hd_1920_1080_25fps.mp4", label: "Ponte de glúteos", credit: "Polina Tankilevitch", source: "https://www.pexels.com/video/woman-doing-glute-bridge-exercise-6525487/" }
+    ? { src: "https://www.youtube-nocookie.com/embed/BFds0DZZcHw", label: "Elevação de quadril no solo", credit: "YouTube", source: "https://youtu.be/BFds0DZZcHw", youtube: true }
     : /prancha baixa/.test(normalized)
-    ? { src: "https://videos.pexels.com/video-files/31035751/13265271_1920_1080_25fps.mp4", label: "Prancha baixa", credit: "Aliaksei Masiukevich", source: "https://www.pexels.com/video/woman-performing-plank-exercise-in-gym-31035751/" }
+    ? { src: "https://www.youtube-nocookie.com/embed/iRd3uGDCzXM", label: "Prancha", credit: "YouTube", source: "https://youtu.be/iRd3uGDCzXM", youtube: true }
+    : /prancha lateral/.test(normalized)
+    ? { src: "https://www.youtube-nocookie.com/embed/skSkMx95OhA", label: "Prancha lateral", credit: "YouTube", source: "https://youtu.be/skSkMx95OhA", youtube: true }
+    : /flexão tradicional/.test(normalized)
+    ? { src: "https://www.youtube-nocookie.com/embed/EY6M9C4RsZQ", label: "Flexão de braço", credit: "YouTube", source: "https://youtu.be/EY6M9C4RsZQ", youtube: true }
     : /flexão inclinada/.test(normalized)
     ? { src: "https://videos.pexels.com/video-files/6740158/6740158-hd_1920_1080_25fps.mp4", label: "Flexão inclinada", credit: "Mikhail Nilov", source: "https://www.pexels.com/video/a-woman-exercising-in-the-gym-6740158/" }
+    : /prancha com joelhos/.test(normalized)
+    ? { src: "https://videos.pexels.com/video-files/6437916/6437916-uhd_2160_3840_24fps.mp4", label: "Demonstração de prancha", credit: "Marta Wave", source: "https://www.pexels.com/video/woman-doing-a-plank-position-6437916/" }
+    : /ponte de glúteos/.test(normalized)
+    ? { src: "https://videos.pexels.com/video-files/6525487/6525487-hd_1920_1080_25fps.mp4", label: "Ponte de glúteos", credit: "Polina Tankilevitch", source: "https://www.pexels.com/video/woman-doing-glute-bridge-exercise-6525487/" }
     : null;
 
   const kind = /ponte|elevação pélvica/.test(normalized) ? "bridge"
@@ -198,7 +213,11 @@ function ExerciseDemo({name}:{name:string}) {
       </div>
       {video ? (
         <>
-          <video className="exercise-real-video" src={video.src} autoPlay loop muted playsInline controls preload="metadata" aria-label={video.label} />
+          {video.youtube ? (
+            <iframe className="exercise-real-video" src={video.src} title={video.label} loading="lazy" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerPolicy="strict-origin-when-cross-origin" allowFullScreen />
+          ) : (
+            <video className="exercise-real-video" src={video.src} autoPlay loop muted playsInline controls preload="metadata" aria-label={video.label} />
+          )}
           <div className="demo-footer">
             <strong>{video.label}</strong>
             <span>Vídeo por {video.credit} · <a href={video.source} target="_blank" rel="noreferrer">Fonte Pexels</a></span>
