@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import { createFileRoute } from "@tanstack/react-router";
+import { Button } from "@/components/ui/button";
 import {
   Activity, ArrowRight, Award, BarChart3, CalendarDays, Check, ChevronRight,
   Clock3, Dumbbell, Flame, Heart, Home, Lock, Search, Settings,
@@ -11,6 +12,10 @@ export const Route = createFileRoute("/")({
     meta: [
       { title: "Calistenia Asiática | Seu movimento, sua evolução" },
       { name: "description", content: "Treinos de calistenia pensados para sua rotina, seu corpo e seus objetivos." },
+      { property: "og:title", content: "Calistenia Asiática | Seu movimento, sua evolução" },
+      { property: "og:description", content: "Treinos de calistenia pensados para sua rotina, seu corpo e seus objetivos." },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary_large_image" },
     ],
   }),
   component: App,
@@ -35,7 +40,7 @@ const nav: { label: Tab; icon: typeof Home }[] = [
   { label: "Início", icon: Home }, { label: "Treinos", icon: Dumbbell }, { label: "Explorar", icon: Search }, { label: "Evolução", icon: BarChart3 }, { label: "Perfil", icon: UserRound },
 ];
 
-function App() {
+export function App() {
   const [tab, setTab] = useState<Tab>("Início");
   const [active, setActive] = useState<Workout | null>(null);
   const [step, setStep] = useState(0);
@@ -82,7 +87,11 @@ function App() {
   const filtered = useMemo(() => workouts.filter(w => (w.title + w.focus + w.level).toLowerCase().includes(query.toLowerCase())), [query]);
   useEffect(() => { if (!nextUnlockAt) return; const check = () => { if (Date.now() >= new Date(nextUnlockAt).getTime()) { setUnlockedDay(day => Math.min(31, day + 1)); setNextUnlockAt(null); } }; check(); const timer = window.setInterval(check, 30_000); return () => window.clearInterval(timer); }, [nextUnlockAt]);
   useEffect(() => { if (hydrated && !startedAt) setStartedAt(new Date().toISOString()); }, [hydrated, startedAt]);
-  const dayWorkout = (day: number) => workouts[(day - 1) % workouts.length];
+  const dayWorkout = (day: number): Workout => {
+    const workout = workouts[(day - 1) % workouts.length];
+    if (!workout) throw new Error("Treino indisponível para este dia.");
+    return workout;
+  };
   const start = (w: Workout, day = unlockedDay) => { if (day > unlockedDay || day < 1 || completedDays.includes(day)) return; setActiveDay(day); setActive(w); setStep(0); };
   const finish = () => {
     if (active) {
@@ -117,7 +126,7 @@ function App() {
         </div>
       </main>
       <nav className="mobile-nav">{nav.map(({label, icon: Icon}) => <button key={label} className={tab === label ? "mobile-link active" : "mobile-link"} onClick={() => setTab(label)}><Icon size={19}/><span>{label}</span></button>)}</nav>
-      {active && <div className="modal-backdrop"><section className="workout-modal"><div className="modal-head"><span className="eyebrow">SEU TREINO GUIADO</span><button className="icon-button" onClick={() => setActive(null)} aria-label="Fechar"><X size={20}/></button></div><div className="workout-progress"><span style={{width: ((step + 1) / active.exercises.length * 100) + "%"}}/></div><div className="exercise-count">EXERCÍCIO {step + 1} DE {active.exercises.length}</div><ExerciseDemo name={active.exercises[step]} /><h2>{active.exercises[step]}</h2><p className="muted">{exerciseGuidance(active.exercises[step])}</p><p className="safety-hint">Respeite seus limites. Interrompa se sentir dor, tontura ou mal-estar.</p><div className="tip-box"><Sparkles size={18}/><span><strong>Como executar</strong> {exerciseGuidance(active.exercises[step])}<br/><strong>Respiração</strong> Solte o ar durante o esforço e inspire no retorno, sem prender a respiração.</span></div><div className="exercise-prescription"><span><strong>2–3</strong><small>séries</small></span><span><strong>8–12</strong><small>repetições</small></span><span><strong>45s</strong><small>descanso</small></span></div><div className="modal-actions"><button className="button-secondary" onClick={() => setStep(Math.max(0, step - 1))} disabled={step === 0}>Anterior</button>{step < active.exercises.length - 1 ? <button className="button-primary" onClick={() => setStep(step + 1)}>Próximo exercício <ArrowRight size={17}/></button> : <button className="button-primary" onClick={finish}><Check size={17}/> Concluir treino</button>}</div></section></div>}
+      {active && <div className="modal-backdrop"><section className="workout-modal"><div className="modal-head"><span className="eyebrow">SEU TREINO GUIADO</span><button className="icon-button" onClick={() => setActive(null)} aria-label="Fechar"><X size={20}/></button></div><div className="workout-progress"><span style={{width: ((step + 1) / active.exercises.length * 100) + "%"}}/></div><div className="exercise-count">EXERCÍCIO {step + 1} DE {active.exercises.length}</div><ExerciseDemo name={(active.exercises[step] ?? "")} /><h2>{(active.exercises[step] ?? "")}</h2><p className="muted">{exerciseGuidance((active.exercises[step] ?? ""))}</p><p className="safety-hint">Respeite seus limites. Interrompa se sentir dor, tontura ou mal-estar.</p><div className="tip-box"><Sparkles size={18}/><span><strong>Como executar</strong> {exerciseGuidance((active.exercises[step] ?? ""))}<br/><strong>Respiração</strong> Solte o ar durante o esforço e inspire no retorno, sem prender a respiração.</span></div><div className="exercise-prescription"><span><strong>2–3</strong><small>séries</small></span><span><strong>8–12</strong><small>repetições</small></span><span><strong>45s</strong><small>descanso</small></span></div><div className="modal-actions"><button className="button-secondary" onClick={() => setStep(Math.max(0, step - 1))} disabled={step === 0}>Anterior</button>{step < active.exercises.length - 1 ? <button className="button-primary" onClick={() => setStep(step + 1)}>Próximo exercício <ArrowRight size={17}/></button> : <button className="button-primary" onClick={finish}><Check size={17}/> Concluir treino</button>}</div></section></div>}
       {onboarding && <div className="modal-backdrop"><section className="settings-modal"><div className="modal-head"><span className="eyebrow">AJUSTE SUA JORNADA</span><button className="icon-button" onClick={() => setOnboarding(false)}><X size={20}/></button></div><h2>Seu plano, seu ritmo.</h2><p className="muted">Personalize suas preferências de treino.</p><label>Seu objetivo</label><div className="choice-grid">{["Perder peso","Ganhar massa","Definição","Fortalecimento","Mobilidade"].map(x=><button className={goal===x?"choice chosen":"choice"} onClick={()=>setGoal(x)} key={x}>{x}</button>)}</div><label>Nível atual</label><div className="choice-grid">{["Iniciante","Intermediário","Avançado"].map(x=><button className={level===x?"choice chosen":"choice"} onClick={()=>setLevel(x)} key={x}>{x}</button>)}</div><label>Disponibilidade semanal</label><div className="choice-grid">{["2 dias","3 dias","4 dias","5 dias"].map(x=><button className={days===x?"choice chosen":"choice"} onClick={()=>setDays(x)} key={x}>{x}</button>)}</div><button className="button-primary full" onClick={()=>setOnboarding(false)}>Salvar preferências <Check size={17}/></button></section></div>}
     </div>
   );
@@ -235,3 +244,26 @@ function JourneyCalendar({unlockedDay,completedDays,nextUnlockAt,dayWorkout,star
   return <section className="journey-panel"><div className="journey-summary"><div><span className="eyebrow">DIA 0 AO DIA 31</span><h3>{completedDays.length} de 31 treinos concluídos</h3><p>{nextUnlockAt ? `Próximo treino em aproximadamente ${hours}h ${minutes}min` : "Seu próximo treino liberado está esperando por você."}</p></div><div className="journey-progress"><span style={{width:(completedDays.length/31*100)+"%"}}/></div></div><div className="journey-calendar">{Array.from({length:32},(_,i)=>{const day=i;const isStart=day===0;const isDone=completedDays.includes(day);const isUnlocked=!isStart && day<=unlockedDay && !isDone;const isLocked=!isStart && !isDone && !isUnlocked;return <button key={day} className={`journey-day ${isStart?"journey-start":isDone?"journey-done":isUnlocked?"journey-unlocked":"journey-locked"}`} disabled={!isUnlocked} onClick={()=>start(dayWorkout(day),day)} aria-label={isStart?"Dia 0, início da jornada":`Dia ${day}: ${isDone?"concluído":isUnlocked?"desbloqueado":"bloqueado"}`}><span className="journey-day-number">{isStart?"INÍCIO":day}</span>{isDone?<Check size={17}/>:isLocked?<Lock size={16}/>:isStart?<Sparkles size={16}/>:<Dumbbell size={16}/>}<small>{isStart?"Dia 0":isDone?"Concluído":isLocked?"Bloqueado":"Liberado"}</small></button>})}</div></section>;
 }
 
+
+
+function Stat({ icon: Icon, label, value, note }: { icon: typeof Flame; label: string; value: string; note: string }) {
+  return <div className="stat-card"><div className="stat-top"><span>{label}</span><Icon size={18}/></div><strong>{value}</strong><small>{note}</small></div>;
+}
+
+function WorkoutCard({ workout, start }: { workout: Workout; start: () => void }) {
+  return <article className="workout-card"><div className={`workout-art ${workout.color}`}><span>{workout.focus}</span><Dumbbell className="art-symbol" size={80}/></div><div className="workout-info"><div className="workout-meta"><span>{workout.level}</span><span><Clock3 size={12}/>{workout.time}</span></div><h3>{workout.title}</h3><p>{workout.description}</p><Button variant="link" className="card-action" onClick={start}>Começar treino <ArrowRight size={14}/></Button></div></article>;
+}
+
+function ExplorePage({ setGoal, goal, setTab, challengeStarted, challengeDay, onStartChallenge }: { setGoal: (goal: string) => void; goal: string; setTab: (tab: Tab) => void; start: (workout: Workout, day?: number) => void; challengeStarted: boolean; challengeDay: number; onStartChallenge: () => void }) {
+  return <><PageHeading kicker="ENCONTRE SEU CAMINHO" title="Movimento com propósito." description="Seu corpo, seus objetivos, seu ritmo."/><div className="goal-grid">{["Perder peso", "Ganhar massa", "Definição", "Fortalecimento", "Mobilidade"].map(item => <Button variant="ghost" key={item} className={`goal-card h-auto whitespace-normal ${goal === item ? "goal-selected" : ""}`} aria-pressed={goal === item} onClick={() => setGoal(item)}><span className="goal-symbol"><Target size={22}/></span><strong>{item}</strong><small>{goal === item ? "Seu objetivo atual" : "Uma nova direção"}</small><ChevronRight size={18}/></Button>)}</div><section className="challenge-card"><div className="challenge-icon"><Flame size={25}/></div><div><span className="eyebrow">CONSISTÊNCIA EM MOVIMENTO</span><h3>Desafio de 7 dias</h3><p>{challengeStarted ? `${challengeDay} de 7 treinos concluídos` : "Pequenos passos para criar uma rotina de movimento."}</p><div className="challenge-days">{Array.from({length: 7}, (_, i) => <span key={i} className={i < challengeDay ? "day-done" : i === challengeDay ? "day-current" : ""}>{i < challengeDay ? <Check size={12}/> : i + 1}</span>)}</div></div><Button className="button-primary" onClick={challengeStarted ? () => setTab("Treinos") : onStartChallenge}>{challengeStarted ? "Ver treinos" : "Começar desafio"}<ArrowRight size={16}/></Button></section></>;
+}
+
+function ProgressPage({ done, history }: { done: string[]; history: WorkoutSession[] }) {
+  const totalSessions = history.length || done.length;
+  const totalMinutes = history.length ? history.reduce((sum, session) => sum + session.duration, 0) : done.length * 18;
+  return <><PageHeading kicker="SUA EVOLUÇÃO" title="Cada movimento conta." description="Celebre os passos que você já deu."/><div className="stats-grid"><Stat icon={Dumbbell} label="Treinos concluídos" value={String(totalSessions)} note="Sua consistência"/><Stat icon={Clock3} label="Tempo em movimento" value={`${totalMinutes} min`} note="Tempo dedicado a você"/><Stat icon={Award} label="Treinos diferentes" value={String(done.length)} note="Novas conquistas"/></div><section className="progress-panel"><div className="section-heading"><h2>Histórico de treinos</h2></div>{totalSessions === 0 ? <div className="empty-state"><div className="empty-icon"><Activity size={25}/></div><h3>Sua jornada está começando</h3><p>Seu primeiro treino será uma nova conquista.</p></div> : history.length > 0 ? [...history].reverse().map(session => <div className="history-row" key={session.id}><span className="history-check"><Check size={16}/></span><div><strong>{session.title}</strong><small>{session.duration} min · Concluído</small></div><span className="history-date">{new Date(session.completedAt).toLocaleDateString("pt-BR")}</span></div>) : done.map(title => <div className="history-row" key={title}><span className="history-check"><Check size={16}/></span><div><strong>{title}</strong><small>Concluído</small></div></div>)}</section><p className="gentle-reminder"><Heart size={16}/>Um dia de cada vez.</p></>;
+}
+
+function ProfilePage({ goal, level, days, setOnboarding }: { goal: string; setGoal: (goal: string) => void; level: string; setLevel: (level: string) => void; days: string; setDays: (days: string) => void; setOnboarding: (open: boolean) => void }) {
+  return <><PageHeading kicker="SEU ESPAÇO" title="Minha jornada." description="Um plano que acompanha seu ritmo."/><div className="profile-card"><div className="profile-avatar">M</div><div><h2>Minha jornada</h2><p>Seu espaço de evolução</p></div><span className="profile-badge"><Sparkles size={14}/>Em movimento</span></div><div className="settings-list">{[{label: "Seu objetivo", value: goal}, {label: "Nível atual", value: level}, {label: "Disponibilidade semanal", value: days}].map(item => <div key={item.label} className="setting-row"><div><strong>{item.label}</strong><small>{item.value}</small></div><Button variant="link" aria-label={`Alterar ${item.label.toLowerCase()}`} onClick={() => setOnboarding(true)}>Alterar<ChevronRight size={15}/></Button></div>)}</div><p className="privacy-note"><Lock size={17}/>Suas preferências ficam salvas neste dispositivo.</p></>;
+}
