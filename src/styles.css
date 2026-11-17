@@ -459,3 +459,23 @@ body{font-family:Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,
 .exercise-video-placeholder span:last-child{font-size:12px;max-width:260px;line-height:1.5}
 .placeholder-play{width:42px;height:42px;display:grid;place-items:center;border-radius:50%;background:#f9dce9;color:#c83e83;padding-left:3px}
 @media(max-width:700px){.exercise-real-video{height:200px;max-height:none;min-height:170px}.exercise-video-placeholder{min-height:180px}}
+
+
+/* Calendário progressivo de 31 dias */
+.journey-panel{background:#fff;border:1px solid #e5e6de;border-radius:14px;padding:20px;margin:18px 0 30px;box-shadow:3px 3px 0 #e1e3d8}
+.journey-summary{display:grid;grid-template-columns:1fr minmax(120px,220px);align-items:center;gap:18px;margin-bottom:18px}
+.journey-summary h3{font-size:18px;font-weight:900;letter-spacing:-.4px;margin:6px 0;color:#202331}
+.journey-summary p{font-size:11px;color:#777d8d;margin:0}
+.journey-progress{height:9px;border-radius:20px;background:#f0e8ed;overflow:hidden}
+.journey-progress span{display:block;height:100%;border-radius:20px;background:linear-gradient(90deg,#ff5ca8,#e94b98);transition:width .25s}
+.journey-calendar{display:grid;grid-template-columns:repeat(8,minmax(0,1fr));gap:9px}
+.journey-day{min-width:0;min-height:82px;border:1px solid #e7e8e1;border-radius:10px;background:#f8f8f4;color:#777d8d;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:5px;padding:8px 3px}
+.journey-day-number{font-size:13px;font-weight:900}
+.journey-day small{font-size:8px;font-weight:800;letter-spacing:.2px}
+.journey-day.journey-start{background:#202331;color:#ffb9d8;border-color:#202331}
+.journey-day.journey-done{background:#ff5ca8;color:#202331;border-color:#ff5ca8}
+.journey-day.journey-unlocked{background:#fff0f6;border:2px solid #e94b98;color:#a52f69;cursor:pointer}
+.journey-day.journey-unlocked:hover{transform:translateY(-2px);box-shadow:2px 3px 0 #f7a8ce}
+.journey-day.journey-locked{background:#f1f1ed;color:#aeb1b8;border-style:dashed;cursor:not-allowed}
+.journey-day:disabled{opacity:1}
+@media(max-width:700px){.journey-panel{padding:14px;margin:14px 0 24px}.journey-summary{grid-template-columns:1fr;gap:12px}.journey-calendar{grid-template-columns:repeat(4,minmax(0,1fr));gap:7px}.journey-day{min-height:72px}.journey-day small{font-size:7px}}
