@@ -2,7 +2,7 @@ import { useEffect, useMemo, useState } from "react";
 import { createFileRoute } from "@tanstack/react-router";
 import {
   Activity, ArrowRight, Award, BarChart3, CalendarDays, Check, ChevronRight,
-  Clock3, Dumbbell, Flame, Heart, Home, Search, Settings,
+  Clock3, Dumbbell, Flame, Heart, Home, Lock, Search, Settings,
   Sparkles, Target, UserRound, Waves, X
 } from "lucide-react";
 
@@ -43,6 +43,11 @@ function App() {
   const [history, setHistory] = useState<WorkoutSession[]>([]);
   const [hydrated, setHydrated] = useState(false);
   const [challengeDay, setChallengeDay] = useState(0);
+  const [startedAt, setStartedAt] = useState<string | null>(null);
+  const [unlockedDay, setUnlockedDay] = useState(1);
+  const [nextUnlockAt, setNextUnlockAt] = useState<string | null>(null);
+  const [completedDays, setCompletedDays] = useState<number[]>([]);
+  const [activeDay, setActiveDay] = useState(1);
   const [challengeStarted, setChallengeStarted] = useState(false);
   const [query, setQuery] = useState("");
   const [goal, setGoal] = useState("Definição");
@@ -53,7 +58,7 @@ function App() {
     try {
       const saved = localStorage.getItem("calistenia-asiatica-state");
       if (saved) {
-        const data = JSON.parse(saved) as { done?: string[]; history?: WorkoutSession[]; goal?: string; level?: string; days?: string; challengeDay?: number; challengeStarted?: boolean };
+        const data = JSON.parse(saved) as { done?: string[]; history?: WorkoutSession[]; goal?: string; level?: string; days?: string; challengeDay?: number; challengeStarted?: boolean; startedAt?: string; unlockedDay?: number; nextUnlockAt?: string | null; completedDays?: number[] };
         if (Array.isArray(data.done)) setDone(data.done);
         if (Array.isArray(data.history)) setHistory(data.history);
         if (typeof data.goal === "string") setGoal(data.goal);
@@ -61,19 +66,31 @@ function App() {
         if (typeof data.days === "string") setDays(data.days);
         if (typeof data.challengeDay === "number") setChallengeDay(Math.min(7, Math.max(0, data.challengeDay)));
         if (typeof data.challengeStarted === "boolean") setChallengeStarted(data.challengeStarted);
+        if (typeof data.startedAt === "string") setStartedAt(data.startedAt);
+        if (typeof data.unlockedDay === "number") setUnlockedDay(Math.min(31, Math.max(1, data.unlockedDay)));
+        if (typeof data.nextUnlockAt === "string" || data.nextUnlockAt === null) setNextUnlockAt(data.nextUnlockAt ?? null);
+        if (Array.isArray(data.completedDays)) setCompletedDays(data.completedDays.filter((n): n is number => Number.isInteger(n) && n >= 1 && n <= 31));
       }
     } catch { /* Estado local inválido: mantém os padrões iniciais. */ }
+    if (!localStorage.getItem("calistenia-asiatica-state")) setStartedAt(new Date().toISOString());
     setHydrated(true);
   }, []);
   useEffect(() => {
     if (!hydrated) return;
-    localStorage.setItem("calistenia-asiatica-state", JSON.stringify({ done, history, goal, level, days, challengeDay, challengeStarted }));
-  }, [done, history, goal, level, days, challengeDay, challengeStarted, hydrated]);
+    localStorage.setItem("calistenia-asiatica-state", JSON.stringify({ done, history, goal, level, days, challengeDay, challengeStarted, startedAt: startedAt ?? new Date().toISOString(), unlockedDay, nextUnlockAt, completedDays }));
+  }, [done, history, goal, level, days, challengeDay, challengeStarted, startedAt, unlockedDay, nextUnlockAt, completedDays, hydrated]);
   const filtered = useMemo(() => workouts.filter(w => (w.title + w.focus + w.level).toLowerCase().includes(query.toLowerCase())), [query]);
-  const start = (w: Workout) => { setActive(w); setStep(0); };
+  useEffect(() => { if (!nextUnlockAt) return; const check = () => { if (Date.now() >= new Date(nextUnlockAt).getTime()) { setUnlockedDay(day => Math.min(31, day + 1)); setNextUnlockAt(null); } }; check(); const timer = window.setInterval(check, 30_000); return () => window.clearInterval(timer); }, [nextUnlockAt]);
+  useEffect(() => { if (hydrated && !startedAt) setStartedAt(new Date().toISOString()); }, [hydrated, startedAt]);
+  const dayWorkout = (day: number) => workouts[(day - 1) % workouts.length];
+  const start = (w: Workout, day = unlockedDay) => { if (day > unlockedDay || day < 1 || completedDays.includes(day)) return; setActiveDay(day); setActive(w); setStep(0); };
   const finish = () => {
     if (active) {
       if (!done.includes(active.title)) setDone([...done, active.title]);
+      if (!completedDays.includes(activeDay)) {
+        setCompletedDays(previous => [...previous, activeDay]);
+        if (activeDay < 31) setNextUnlockAt(new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString());
+      }
       setHistory(previous => [...previous, { id: `${Date.now()}-${previous.length}`, title: active.title, completedAt: new Date().toISOString(), duration: Number.parseInt(active.time, 10) || 0 }]);
     }
     if (challengeStarted && challengeDay < 7) setChallengeDay(challengeDay + 1);
@@ -92,8 +109,8 @@ function App() {
       <main className="main-area">
         <header className="topbar"><div className="mobile-brand">✿ calisteniaasiática</div><div className="breadcrumb">Sua jornada <span>/</span> {tab}</div><div className="top-actions"><span className="streak"><Flame size={16}/> {done.length} treinos</span><button className="icon-button" aria-label="Perfil" onClick={() => setTab("Perfil")}><UserRound size={19}/></button></div></header>
         <div className="content">
-          {tab === "Início" && <HomePage done={done} history={history} start={start} setTab={setTab} />}
-          {tab === "Treinos" && <WorkoutPage items={filtered} query={query} setQuery={setQuery} start={start} />}
+          {tab === "Início" && <HomePage done={done} history={history} start={start} setTab={setTab} unlockedDay={unlockedDay} completedDays={completedDays} nextUnlockAt={nextUnlockAt} dayWorkout={dayWorkout} />}
+          {tab === "Treinos" && <WorkoutPage items={filtered} query={query} setQuery={setQuery} start={start} unlockedDay={unlockedDay} completedDays={completedDays} nextUnlockAt={nextUnlockAt} dayWorkout={dayWorkout} />}
           {tab === "Explorar" && <ExplorePage setGoal={setGoal} goal={goal} setTab={setTab} start={start} challengeStarted={challengeStarted} challengeDay={challengeDay} onStartChallenge={() => { setChallengeStarted(true); setTab("Treinos"); }} />}
           {tab === "Evolução" && <ProgressPage done={done} history={history} />}
           {tab === "Perfil" && <ProfilePage goal={goal} setGoal={setGoal} level={level} setLevel={setLevel} days={days} setDays={setDays} setOnboarding={setOnboarding} />}
@@ -195,31 +212,26 @@ function exerciseGuidance(name: string) {
 
 function PageHeading({kicker,title,description}:{kicker:string;title:string;description:string}) { return <div className="page-heading"><span className="eyebrow">{kicker}</span><h1>{title}</h1><p>{description}</p></div>; }
 
-function HomePage({done,history,start,setTab}:{done:string[];history:WorkoutSession[];start:(w:Workout)=>void;setTab:(t:Tab)=>void}) {
+function HomePage({done,history,start,setTab,unlockedDay,completedDays,nextUnlockAt,dayWorkout}:{done:string[];history:WorkoutSession[];start:(w:Workout,day?:number)=>void;setTab:(t:Tab)=>void;unlockedDay:number;completedDays:number[];nextUnlockAt:string|null;dayWorkout:(day:number)=>Workout}) {
   const totalSessions = history.length || done.length;
   const totalMinutes = history.length ? history.reduce((sum, session) => sum + session.duration, 0) : done.length * 18;
-  return <><div className="welcome-row"><div><span className="eyebrow">SUA JORNADA COMEÇA NO SEU RITMO</span><h1>Olá, que bom ter você <em>por aqui.</em></h1><p>Seu corpo é sua casa. Cuide dele com carinho, um movimento de cada vez.</p></div><div className="welcome-flower">✿</div></div>
-    <section className="hero-card"><div className="hero-copy"><span className="hero-tag"><Sparkles size={14}/> SEU MOMENTO DE HOJE</span><h2>Um pouco melhor<br/>a cada movimento.</h2><p>Comece com um treino pensado para você e transforme intenção em consistência.</p><button className="button-light" onClick={()=>start(workouts[0])}>Começar treino <ArrowRight size={17}/></button></div><div className="hero-illustration"><div className="sun-disc"/><div className="hero-person">♀</div><span className="hero-caption">FORÇA • EQUILÍBRIO • VOCÊ</span></div></section>
-    <div className="stats-grid"><Stat icon={Flame} label="Sua jornada" value={totalSessions ? totalSessions + " treinos" : "Comece hoje"} note="Continue assim!"/><Stat icon={Clock3} label="Tempo em movimento" value={totalMinutes + " min"} note="Cada minuto conta"/><Stat icon={Award} label="Treinos concluídos" value={String(totalSessions)} note="Sua evolução começa aqui"/></div>
-    <div className="section-heading"><div><span className="eyebrow">FEITO PARA VOCÊ</span><h2>Seu próximo treino</h2></div><button className="text-link" onClick={()=>setTab("Treinos")}>Ver todos <ArrowRight size={16}/></button></div>
-    <div className="workout-grid">{workouts.slice(0,3).map(w=><WorkoutCard key={w.title} workout={w} start={start}/>)}</div>
+  const current = completedDays.includes(unlockedDay) ? Math.min(31, unlockedDay + 1) : unlockedDay;
+  return <><div className="welcome-row"><div><span className="eyebrow">SUA JORNADA COMEÇA NO SEU RITMO</span><h1>Olá, que bom ter você <em>por aqui.</em></h1><p>Um treino por dia. Cada etapa libera a próxima no seu tempo.</p></div><div className="welcome-flower">✿</div></div>
+    <section className="hero-card"><div className="hero-copy"><span className="hero-tag"><Sparkles size={14}/> DIA {current} DA SUA JORNADA</span><h2>Um pouco melhor<br/>a cada movimento.</h2><p>{nextUnlockAt ? "Seu próximo treino será liberado 24 horas após a conclusão do último." : "Seu treino de hoje está pronto. Vamos começar?"}</p><button className="button-light" onClick={()=>start(dayWorkout(current),current)}>{completedDays.includes(current)?"Treino concluído":"Começar treino"} <ArrowRight size={17}/></button></div><div className="hero-illustration"><div className="sun-disc"/><div className="hero-person">♀</div><span className="hero-caption">FORÇA • EQUILÍBRIO • VOCÊ</span></div></section>
+    <div className="stats-grid"><Stat icon={Flame} label="Sua jornada" value={totalSessions ? totalSessions + " treinos" : "Comece hoje"} note="Continue assim!"/><Stat icon={Clock3} label="Tempo em movimento" value={totalMinutes + " min"} note="Cada minuto conta"/><Stat icon={Award} label="Dias concluídos" value={String(completedDays.length)} note="Sua evolução começa aqui"/></div>
+    <div className="section-heading"><div><span className="eyebrow">SEU CALENDÁRIO</span><h2>Jornada de 31 dias</h2></div><button className="text-link" onClick={()=>setTab("Treinos")}>Ver calendário <ArrowRight size={16}/></button></div>
+    <JourneyCalendar unlockedDay={unlockedDay} completedDays={completedDays} nextUnlockAt={nextUnlockAt} dayWorkout={dayWorkout} start={start}/>
     <div className="bottom-note"><Heart size={18}/><span>Não precisa ser perfeito. Só precisa ser seu.</span><span className="note-right">UM DIA DE CADA VEZ</span></div>
   </>;
 }
-
-function Stat({icon:Icon,label,value,note}:{icon:typeof Flame;label:string;value:string;note:string}) { return <div className="stat-card"><div className="stat-top"><span>{label}</span><Icon size={18}/></div><strong>{value}</strong><small>{note}</small></div>; }
-
-function WorkoutCard({workout,start}:{workout:Workout;start:(w:Workout)=>void}) { return <article className="workout-card"><div className={"workout-art "+workout.color}><span>{workout.focus}</span><div className="art-symbol">{workout.focus==="Full body"?"◉":workout.focus==="Inferiores"?"✿":workout.focus==="Abdômen"?"◌":"〰"}</div></div><div className="workout-info"><div className="workout-meta"><span>{workout.level}</span><span><Clock3 size={13}/> {workout.time}</span></div><h3>{workout.title}</h3><p>{workout.description}</p><button className="card-action" onClick={()=>start(workout)}>Ver treino <ArrowRight size={15}/></button></div></article>; }
-
-function WorkoutPage({items,query,setQuery,start}:{items:Workout[];query:string;setQuery:(v:string)=>void;start:(w:Workout)=>void}) { return <><PageHeading kicker="MOVIMENTO COM INTENÇÃO" title="Encontre seu ritmo." description="Treinos que acompanham sua fase, seu tempo e seus objetivos."/><div className="search-box"><Search size={18}/><input value={query} onChange={e=>setQuery(e.target.value)} placeholder="Buscar por treino, foco ou nível..."/></div><div className="filter-pills"><span className="filter-active">Todos os treinos</span><span>Iniciante</span><span>Intermediário</span><span>Avançado</span></div><div className="workout-grid">{items.map(w=><WorkoutCard key={w.title} workout={w} start={start}/>)}</div>{items.length===0&&<p className="empty-state">Não encontramos treinos com esse termo. Tente outra busca.</p>}</>; }
-
-function ExplorePage({goal,setGoal,setTab,start,challengeStarted,challengeDay,onStartChallenge}:{goal:string;setGoal:(v:string)=>void;setTab:(t:Tab)=>void;start:(w:Workout)=>void;challengeStarted:boolean;challengeDay:number;onStartChallenge:()=>void}) { const goals=[["Perder peso","Movimente-se com leveza e constância","↗"],["Ganhar massa","Construa força progressivamente","✳"],["Definição","Encontre equilíbrio entre força e controle","◇"],["Fortalecimento","Uma base forte para todos os movimentos","◉"],["Mobilidade","Mais liberdade para se movimentar","〰"]]; return <><PageHeading kicker="EXPLORE POSSIBILIDADES" title="O que faz sentido para você?" description="Escolha um caminho. A sua jornada pode mudar sempre que você precisar."/><div className="goal-grid">{goals.map(([name,desc,symbol])=><button key={name} onClick={()=>{setGoal(name);setTab("Treinos")}} className={goal===name?"goal-card goal-selected":"goal-card"}><span className="goal-symbol">{symbol}</span><strong>{name}</strong><small>{desc}</small><ChevronRight size={18}/></button>)}</div><div className="section-heading"><div><span className="eyebrow">COMECE POR AQUI</span><h2>Pequenos desafios, grandes hábitos</h2></div></div><div className="challenge-card"><div className="challenge-icon"><Target size={26}/></div><div><span className="eyebrow">DESAFIO DE 7 ETAPAS</span><h3>{challengeDay >= 7 ? "Desafio concluído!" : challengeStarted ? `Você está na etapa ${challengeDay + 1}` : "Uma semana por você"}</h3><p>{challengeDay >= 7 ? "Parabéns por completar sua semana de movimento." : "Sete etapas para criar espaço na rotina para se movimentar. No seu ritmo, sem pressão."}</p><div className="challenge-days">{Array.from({length:7},(_,i)=><span key={i} className={i<challengeDay?"day-done":i===challengeDay&&challengeStarted?"day-current":""}>{i<challengeDay?"✓":i+1}</span>)}</div></div><button className="button-primary" onClick={()=>challengeStarted?start(workouts[Math.min(challengeDay,workouts.length-1)]):onStartChallenge()}>{challengeDay>=7?"Repetir treino":challengeStarted?"Fazer treino":"Começar desafio"} <ArrowRight size={16}/></button></div></>; }
-
-function ProgressPage({done,history}:{done:string[];history:WorkoutSession[]}) {
-  const totalSessions = history.length || done.length;
-  const totalMinutes = history.length ? history.reduce((sum, session) => sum + session.duration, 0) : done.length * 18;
-  const legacyItems = done.filter(title => !history.some(session => session.title === title));
-  return <><PageHeading kicker="CADA PASSO CONTA" title="Olha o quanto você já fez." description="A evolução não acontece de um dia para o outro. Ela acontece um dia de cada vez."/><div className="stats-grid"><Stat icon={Dumbbell} label="Treinos concluídos" value={String(totalSessions)} note="Sua dedicação"/><Stat icon={Clock3} label="Minutos ativos" value={totalMinutes+" min"} note="Tempo investido em você"/><Stat icon={Flame} label="Etapas concluídas" value={totalSessions?totalSessions+" treinos":"Comece hoje"} note="Constância é tudo"/></div><div className="progress-panel"><div className="section-heading"><div><span className="eyebrow">SEU HISTÓRICO</span><h2>Treinos realizados</h2></div><CalendarDays size={20}/></div>{totalSessions===0?<div className="empty-state"><div className="empty-icon"><BarChart3 size={28}/></div><h3>Sua história começa hoje.</h3><p>Conclua seu primeiro treino e ele aparecerá aqui.</p></div>:<>{history.slice().reverse().map(session=><div className="history-row" key={session.id}><span className="history-check"><Check size={16}/></span><div><strong>{session.title}</strong><small>Treino concluído • {session.duration} min</small></div><span className="history-date">{new Date(session.completedAt).toLocaleDateString("pt-BR", { day: "2-digit", month: "short", year: "numeric" })}</span></div>)}{legacyItems.map((title,index)=><div className="history-row" key={`legacy-${index}`}><span className="history-check"><Check size={16}/></span><div><strong>{title}</strong><small>Treino concluído • data não registrada</small></div><span className="history-date">Anterior</span></div>)}</>}</div><p className="gentle-reminder"><Heart size={17}/> Compare-se apenas com quem você era ontem.</p></>;
+function WorkoutPage({items,query,setQuery,start,unlockedDay,completedDays,nextUnlockAt,dayWorkout}:{items:Workout[];query:string;setQuery:(v:string)=>void;start:(w:Workout,day?:number)=>void;unlockedDay:number;completedDays:number[];nextUnlockAt:string|null;dayWorkout:(day:number)=>Workout}) {
+  return <><PageHeading kicker="SUA JORNADA" title="Um treino por dia." description="Conclua o treino liberado e aguarde 24 horas para desbloquear a próxima etapa."/><JourneyCalendar unlockedDay={unlockedDay} completedDays={completedDays} nextUnlockAt={nextUnlockAt} dayWorkout={dayWorkout} start={start}/><div className="section-heading"><div><span className="eyebrow">BIBLIOTECA DE MOVIMENTOS</span><h2>Treinos da jornada</h2></div></div><div className="search-box"><Search size={18}/><input value={query} onChange={e=>setQuery(e.target.value)} placeholder="Buscar por treino, foco ou nível..."/></div><div className="workout-grid">{items.map(w=><WorkoutCard key={w.title} workout={w} start={()=>{const day=Array.from({length:31},(_,i)=>i+1).find(d=>dayWorkout(d).title===w.title && d<=unlockedDay && !completedDays.includes(d));if(day)start(w,day)}}/>)}</div>{items.length===0&&<p className="empty-state">Não encontramos treinos com esse termo. Tente outra busca.</p>}</>;
 }
 
-function ProfilePage({goal,setGoal,level,setLevel,days,setDays,setOnboarding}:{goal:string;setGoal:(v:string)=>void;level:string;setLevel:(v:string)=>void;days:string;setDays:(v:string)=>void;setOnboarding:(v:boolean)=>void}) { return <><PageHeading kicker="SEU ESPAÇO" title="Sua jornada, suas escolhas." description="Um plano que respeita seu momento e evolui junto com você."/><div className="profile-card"><div className="profile-avatar">M</div><div><h2>Minha jornada</h2><p>Você está construindo um hábito para a vida.</p></div><span className="profile-badge"><Sparkles size={14}/> Em evolução</span></div><div className="settings-list"><div className="setting-row"><div><strong>Meu objetivo</strong><small>{goal}</small></div><button onClick={()=>setOnboarding(true)}>Editar <ChevronRight size={16}/></button></div><div className="setting-row"><div><strong>Nível de treino</strong><small>{level}</small></div><button onClick={()=>setOnboarding(true)}>Editar <ChevronRight size={16}/></button></div><div className="setting-row"><div><strong>Disponibilidade</strong><small>{days} por semana</small></div><button onClick={()=>setOnboarding(true)}>Editar <ChevronRight size={16}/></button></div></div><div className="privacy-note"><Heart size={18}/><span>Seu corpo, seu tempo, suas regras. Ajuste seu plano sempre que precisar.</span></div></>; }
+function JourneyCalendar({unlockedDay,completedDays,nextUnlockAt,dayWorkout,start}:{unlockedDay:number;completedDays:number[];nextUnlockAt:string|null;dayWorkout:(day:number)=>Workout;start:(w:Workout,day?:number)=>void}) {
+  const remaining = nextUnlockAt ? Math.max(0,new Date(nextUnlockAt).getTime()-Date.now()) : 0;
+  const hours = Math.floor(remaining/3600000);
+  const minutes = Math.floor((remaining%3600000)/60000);
+  return <section className="journey-panel"><div className="journey-summary"><div><span className="eyebrow">DIA 0 AO DIA 31</span><h3>{completedDays.length} de 31 treinos concluídos</h3><p>{nextUnlockAt ? `Próximo treino em aproximadamente ${hours}h ${minutes}min` : "Seu próximo treino liberado está esperando por você."}</p></div><div className="journey-progress"><span style={{width:(completedDays.length/31*100)+"%"}}/></div></div><div className="journey-calendar">{Array.from({length:32},(_,i)=>{const day=i;const isStart=day===0;const isDone=completedDays.includes(day);const isUnlocked=!isStart && day<=unlockedDay && !isDone;const isLocked=!isStart && !isDone && !isUnlocked;return <button key={day} className={`journey-day ${isStart?"journey-start":isDone?"journey-done":isUnlocked?"journey-unlocked":"journey-locked"}`} disabled={!isUnlocked} onClick={()=>start(dayWorkout(day),day)} aria-label={isStart?"Dia 0, início da jornada":`Dia ${day}: ${isDone?"concluído":isUnlocked?"desbloqueado":"bloqueado"}`}><span className="journey-day-number">{isStart?"INÍCIO":day}</span>{isDone?<Check size={17}/>:isLocked?<Lock size={16}/>:isStart?<Sparkles size={16}/>:<Dumbbell size={16}/>}<small>{isStart?"Dia 0":isDone?"Concluído":isLocked?"Bloqueado":"Liberado"}</small></button>})}</div></section>;
+}
+
