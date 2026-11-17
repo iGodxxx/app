@@ -614,3 +614,16 @@ body{font-family:Inter,"Avenir Next",ui-sans-serif,system-ui,sans-serif;letter-s
   .sidebar{display:none}.main-area{margin-left:0}.topbar{height:60px;padding:0 18px}.breadcrumb{display:none}.mobile-brand{display:block;font-size:14px}.top-actions{gap:9px}.streak{padding:8px 10px;font-size:10px}.content{padding:27px 17px 96px}.welcome-row{margin-bottom:20px}.welcome-row h1{font-size:30px;letter-spacing:-1.4px}.welcome-row p{font-size:11px;max-width:280px}.welcome-flower{font-size:42px}.hero-card{min-height:260px;border-radius:19px}.hero-copy{padding:28px 23px;max-width:72%}.hero-copy h2{font-size:29px}.hero-copy p{font-size:10px}.hero-illustration{right:-13%;width:52%;opacity:.7}.sun-disc{width:145px;height:145px;top:65px}.hero-person{font-size:115px}.hero-caption{font-size:6px;right:4%}.stats-grid{gap:8px;margin:15px 0 29px}.stat-card{padding:13px 11px;border-radius:13px}.stat-top{font-size:9px}.stat-top svg{width:14px}.stat-card>strong{font-size:20px;margin:10px 0 3px}.stat-card>small{font-size:8px}.section-heading h2{font-size:19px}.journey-panel{padding:14px;border-radius:16px}.journey-calendar{grid-template-columns:repeat(4,minmax(0,1fr));gap:7px}.journey-day{min-height:70px}.journey-day small{font-size:7px}.workout-grid{grid-template-columns:1fr 1fr;gap:10px}.workout-art{height:105px;padding:11px}.art-symbol{font-size:82px;right:13px}.workout-info{padding:12px}.workout-info h3{font-size:13px;line-height:1.25}.workout-info p{font-size:9px;min-height:44px}.workout-meta{font-size:8px}.card-action{font-size:9px}.page-heading h1{font-size:31px}.page-heading p{font-size:11px}.bottom-note{font-size:9px;padding:13px}.note-right{font-size:6px}.mobile-nav{display:flex;position:fixed;bottom:0;left:0;right:0;z-index:10;justify-content:space-around;padding:9px 4px calc(9px + env(safe-area-inset-bottom));box-shadow:0 -8px 24px #211a261c}.mobile-link{display:flex;flex-direction:column;align-items:center;gap:4px;border:0;background:none;font-size:8px;min-width:52px}.mobile-link.active{font-weight:800}.modal-backdrop{padding:10px}.workout-modal,.settings-modal{max-height:92vh;overflow:auto;padding:17px;border-radius:18px}
 }
 @media(min-width:701px) and (max-width:900px){.sidebar{width:210px;padding:25px 15px}.main-area{margin-left:210px}.content{padding-left:4%;padding-right:4%}.workout-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+
+
+/* Animações demonstrativas para todos os movimentos sem vídeo real */
+.figure-cardio{animation:march-cycle 1.8s ease-in-out infinite}
+.figure-standing{animation:stretch-sway 3.2s ease-in-out infinite}
+.figure-core{animation:crunch-cycle 2.8s ease-in-out infinite;transform-origin:50% 75%}
+.demo-stage-floor .demo-motion-arrow,.demo-stage-core .demo-motion-arrow{animation-duration:1.8s}
+.demo-stage-quadruped .demo-motion-arrow{animation-duration:2.2s}
+.exercise-video-demo .demo-stage{flex:1;min-height:184px}
+.exercise-video-demo .demo-visual{max-width:440px}
+@media(prefers-reduced-motion:reduce){
+  .figure-cardio,.figure-standing,.figure-core,.figure-bridge,.figure-floor,.figure-birddog,.figure-squat,.figure-lunge,.figure-stretch{animation:none!important}
+}
