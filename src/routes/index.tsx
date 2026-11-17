@@ -3,15 +3,15 @@ import { createFileRoute } from "@tanstack/react-router";
 import { Button } from "@/components/ui/button";
 import {
   Activity, ArrowRight, Award, BarChart3, CalendarDays, Check, ChevronRight,
-  Clock3, Dumbbell, Flame, Heart, Home, Lock, Search, Settings,
-  Sparkles, Target, UserRound, Waves, X
+  Clock3, Dumbbell, Flame, Gift, Heart, Home, Leaf, Lock, Search, Settings,
+  Sparkles, Target, UserRound, Utensils, Waves, X
 } from "lucide-react";
 
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
       { title: "Calistenia Asiática | Seu movimento, sua evolução" },
-      { name: "description", content: "Treinos de calistenia pensados para sua rotina, seu corpo e seus objetivos." },
+      { name: "description", content: "Treinos, mobilidade e alimentação prática para acompanhar sua jornada de 21 dias." },
       { property: "og:title", content: "Calistenia Asiática | Seu movimento, sua evolução" },
       { property: "og:description", content: "Treinos de calistenia pensados para sua rotina, seu corpo e seus objetivos." },
       { property: "og:type", content: "website" },
@@ -21,7 +21,7 @@ export const Route = createFileRoute("/")({
   component: App,
 });
 
-type Tab = "Início" | "Treinos" | "Explorar" | "Evolução" | "Perfil";
+type Tab = "Início" | "Jornada" | "Treinos" | "Alimentação" | "Bônus" | "Evolução" | "Perfil";
 type Workout = { title: string; level: string; time: string; focus: string; color: string; description: string; exercises: string[] };
 type WorkoutSession = { id: string; title: string; completedAt: string; duration: number; calories?: number; caloriesMin?: number; caloriesMax?: number; weightKg?: number };
 
@@ -34,10 +34,13 @@ const workouts: Workout[] = [
   { title: "Cardio sem impacto", level: "Iniciante", time: "16 min", focus: "Cardio", color: "peach", description: "Eleve o ritmo com movimentos de baixo impacto e pausas conscientes.", exercises: ["Marcha estacionária", "Passo lateral", "Agachamento curto", "Elevação alternada de joelhos", "Desaceleração"] },
   { title: "Glúteos em foco", level: "Intermediário", time: "22 min", focus: "Glúteos", color: "rose", description: "Uma sequência focada em força e controle para a região dos glúteos.", exercises: ["Ponte de glúteos", "Coice em quatro apoios", "Abdução lateral", "Ponte unilateral", "Alongamento de glúteos"] },
   { title: "Base de força", level: "Avançado", time: "28 min", focus: "Full body", color: "sage", description: "Um treino desafiador para quem já domina os movimentos básicos.", exercises: ["Agachamento com pausa", "Flexão tradicional", "Afundo reverso", "Prancha alta com toque", "Prancha lateral"] },
+  { title: "Corpo inteiro express", level: "Iniciante", time: "14 min", focus: "Full body", color: "peach", description: "Uma sequência objetiva para movimentar o corpo todo em pouco tempo.", exercises: ["Aquecimento articular", "Agachamento livre", "Flexão inclinada", "Ponte de glúteos", "Respiração e relaxamento"] },
+  { title: "Core e postura express", level: "Iniciante", time: "10 min", focus: "Abdômen", color: "sage", description: "Estabilidade do tronco e controle corporal em uma rotina curta.", exercises: ["Dead bug", "Bird dog", "Prancha baixa", "Abdominal curto", "Respiração e relaxamento"] },
+  { title: "Glúteos sem impacto", level: "Iniciante", time: "18 min", focus: "Glúteos", color: "rose", description: "Movimentos controlados para trabalhar quadril e glúteos sem saltos.", exercises: ["Ponte de glúteos", "Coice em quatro apoios", "Abdução lateral", "Agachamento sumô", "Alongamento de glúteos"] },
 ];
 
 const nav: { label: Tab; icon: typeof Home }[] = [
-  { label: "Início", icon: Home }, { label: "Treinos", icon: Dumbbell }, { label: "Explorar", icon: Search }, { label: "Evolução", icon: BarChart3 }, { label: "Perfil", icon: UserRound },
+  { label: "Início", icon: Home }, { label: "Jornada", icon: CalendarDays }, { label: "Treinos", icon: Dumbbell }, { label: "Alimentação", icon: Utensils }, { label: "Bônus", icon: Gift }, { label: "Evolução", icon: BarChart3 }, { label: "Perfil", icon: UserRound },
 ];
 
 export function App() {
@@ -74,9 +77,9 @@ export function App() {
         if (typeof data.challengeDay === "number") setChallengeDay(Math.min(7, Math.max(0, data.challengeDay)));
         if (typeof data.challengeStarted === "boolean") setChallengeStarted(data.challengeStarted);
         if (typeof data.startedAt === "string") setStartedAt(data.startedAt);
-        if (typeof data.unlockedDay === "number") setUnlockedDay(Math.min(31, Math.max(1, data.unlockedDay)));
+        if (typeof data.unlockedDay === "number") setUnlockedDay(Math.min(21, Math.max(1, data.unlockedDay)));
         if (typeof data.nextUnlockAt === "string" || data.nextUnlockAt === null) setNextUnlockAt(data.nextUnlockAt ?? null);
-        if (Array.isArray(data.completedDays)) setCompletedDays(data.completedDays.filter((n): n is number => Number.isInteger(n) && n >= 1 && n <= 31));
+        if (Array.isArray(data.completedDays)) setCompletedDays(data.completedDays.filter((n): n is number => Number.isInteger(n) && n >= 1 && n <= 21));
       }
     } catch { /* Estado local inválido: mantém os padrões iniciais. */ }
     if (!localStorage.getItem("calistenia-asiatica-state")) setStartedAt(new Date().toISOString());
@@ -87,7 +90,7 @@ export function App() {
     localStorage.setItem("calistenia-asiatica-state", JSON.stringify({ done, history, goal, level, days, weightKg, challengeDay, challengeStarted, startedAt: startedAt ?? new Date().toISOString(), unlockedDay, nextUnlockAt, completedDays }));
   }, [done, history, goal, level, days, weightKg, challengeDay, challengeStarted, startedAt, unlockedDay, nextUnlockAt, completedDays, hydrated]);
   const filtered = useMemo(() => workouts.filter(w => (w.title + w.focus + w.level).toLowerCase().includes(query.toLowerCase())), [query]);
-  useEffect(() => { if (!nextUnlockAt) return; const check = () => { if (Date.now() >= new Date(nextUnlockAt).getTime()) { setUnlockedDay(day => Math.min(31, day + 1)); setNextUnlockAt(null); } }; check(); const timer = window.setInterval(check, 30_000); return () => window.clearInterval(timer); }, [nextUnlockAt]);
+  useEffect(() => { if (!nextUnlockAt) return; const check = () => { if (Date.now() >= new Date(nextUnlockAt).getTime()) { setUnlockedDay(day => Math.min(21, day + 1)); setNextUnlockAt(null); } }; check(); const timer = window.setInterval(check, 30_000); return () => window.clearInterval(timer); }, [nextUnlockAt]);
   useEffect(() => { if (hydrated && !startedAt) setStartedAt(new Date().toISOString()); }, [hydrated, startedAt]);
   const dayWorkout = (day: number): Workout => {
     const workout = workouts[(day - 1) % workouts.length];
@@ -100,7 +103,7 @@ export function App() {
       if (!done.includes(active.title)) setDone([...done, active.title]);
       if (!completedDays.includes(activeDay)) {
         setCompletedDays(previous => [...previous, activeDay]);
-        if (activeDay < 31) setNextUnlockAt(new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString());
+        if (activeDay < 21) setNextUnlockAt(new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString());
       }
       const duration = Number.parseInt(active.time, 10) || 0;
       const calorieRange = weightKg !== null && weightKg >= 30 && weightKg <= 250 ? estimateWorkoutCalories(active, duration, weightKg) : undefined;
@@ -124,7 +127,9 @@ export function App() {
         <div className="content">
           {tab === "Início" && <HomePage done={done} history={history} start={start} setTab={setTab} unlockedDay={unlockedDay} completedDays={completedDays} nextUnlockAt={nextUnlockAt} dayWorkout={dayWorkout} weightKg={weightKg} />}
           {tab === "Treinos" && <WorkoutPage items={filtered} query={query} setQuery={setQuery} start={start} unlockedDay={unlockedDay} completedDays={completedDays} nextUnlockAt={nextUnlockAt} dayWorkout={dayWorkout} />}
-          {tab === "Explorar" && <ExplorePage setGoal={setGoal} goal={goal} setTab={setTab} start={start} challengeStarted={challengeStarted} challengeDay={challengeDay} onStartChallenge={() => { setChallengeStarted(true); setTab("Treinos"); }} />}
+          {tab === "Jornada" && <JourneyPage setTab={setTab} start={start} unlockedDay={unlockedDay} completedDays={completedDays} nextUnlockAt={nextUnlockAt} dayWorkout={dayWorkout} />}
+          {tab === "Alimentação" && <FoodPage />}
+          {tab === "Bônus" && <BonusesPage setTab={setTab} />}
           {tab === "Evolução" && <ProgressPage done={done} history={history} />}
           {tab === "Perfil" && <ProfilePage goal={goal} level={level} days={days} weightKg={weightKg} setOnboarding={setOnboarding} />}
         </div>
@@ -398,20 +403,20 @@ function HomePage({done,history,start,setTab,unlockedDay,completedDays,nextUnloc
     <section className="hero-card"><div className="hero-copy"><span className="hero-tag"><Sparkles size={14}/> DIA {current} DA SUA JORNADA</span><h2>Um pouco melhor<br/>a cada movimento.</h2><p>{nextUnlockAt ? "Seu próximo treino será liberado 24 horas após a conclusão do último." : "Seu treino de hoje está pronto. Vamos começar?"}</p><button className="button-light" disabled={completedDays.includes(current)} onClick={()=>start(dayWorkout(current),current)}>{completedDays.includes(current)?"Aguardando próxima liberação":"Começar treino"} <ArrowRight size={17}/></button></div><div className="hero-illustration"><div className="sun-disc"/><div className="hero-person">♀</div><span className="hero-caption">FORÇA • EQUILÍBRIO • VOCÊ</span></div></section>
     <section className="home-calorie-card"><div className="home-calorie-icon"><Flame size={23}/></div><div className="home-calorie-copy"><span className="eyebrow">GASTO CALÓRICO ESTIMADO</span><strong>{calorieRange ? `~${calorieRange.min}–${calorieRange.max} kcal` : "Personalize sua estimativa"}</strong><p>{calorieRange ? `${todayWorkout.title} · ${todayWorkout.time} · Faixa aproximada conforme intensidade` : "Informe seu peso corporal no perfil para calcular uma faixa para o treino de hoje."}</p></div><button className="home-calorie-action" onClick={()=>setTab(calorieRange ? "Treinos" : "Perfil")}>{calorieRange ? "Ver treino" : "Informar peso"} <ArrowRight size={15}/></button></section>
     <div className="stats-grid"><Stat icon={Flame} label="Sua jornada" value={totalSessions ? totalSessions + " treinos" : "Comece hoje"} note="Continue assim!"/><Stat icon={Clock3} label="Tempo em movimento" value={totalMinutes + " min"} note="Cada minuto conta"/><Stat icon={Award} label="Dias concluídos" value={String(completedDays.length)} note="Sua evolução começa aqui"/></div>
-    <div className="section-heading"><div><span className="eyebrow">SEU CALENDÁRIO</span><h2>Jornada de 31 dias</h2></div><button className="text-link" onClick={()=>setTab("Treinos")}>Ver calendário <ArrowRight size={16}/></button></div>
+    <div className="section-heading"><div><span className="eyebrow">SEU CALENDÁRIO</span><h2>Jornada de 21 dias</h2></div><button className="text-link" onClick={()=>setTab("Treinos")}>Ver calendário <ArrowRight size={16}/></button></div>
     <JourneyCalendar unlockedDay={unlockedDay} completedDays={completedDays} nextUnlockAt={nextUnlockAt} dayWorkout={dayWorkout} start={start}/>
     <div className="bottom-note"><Heart size={18}/><span>Não precisa ser perfeito. Só precisa ser seu.</span><span className="note-right">UM DIA DE CADA VEZ</span></div>
   </>;
 }
 function WorkoutPage({items,query,setQuery,start,unlockedDay,completedDays,nextUnlockAt,dayWorkout}:{items:Workout[];query:string;setQuery:(v:string)=>void;start:(w:Workout,day?:number)=>void;unlockedDay:number;completedDays:number[];nextUnlockAt:string|null;dayWorkout:(day:number)=>Workout}) {
-  return <><PageHeading kicker="SUA JORNADA" title="Um treino por dia." description="Conclua o treino liberado e aguarde 24 horas para desbloquear a próxima etapa."/><JourneyCalendar unlockedDay={unlockedDay} completedDays={completedDays} nextUnlockAt={nextUnlockAt} dayWorkout={dayWorkout} start={start}/><div className="section-heading"><div><span className="eyebrow">BIBLIOTECA DE MOVIMENTOS</span><h2>Treinos da jornada</h2></div></div><div className="search-box"><Search size={18}/><input value={query} onChange={e=>setQuery(e.target.value)} placeholder="Buscar por treino, foco ou nível..."/></div><div className="workout-grid">{items.map(w=><WorkoutCard key={w.title} workout={w} start={()=>{const day=Array.from({length:31},(_,i)=>i+1).find(d=>dayWorkout(d).title===w.title && d<=unlockedDay && !completedDays.includes(d));if(day)start(w,day)}}/>)}</div>{items.length===0&&<p className="empty-state">Não encontramos treinos com esse termo. Tente outra busca.</p>}</>;
+  return <><PageHeading kicker="SUA JORNADA" title="Um treino por dia." description="21 dias de movimento, de 17 de novembro a 7 de dezembro. Cada etapa libera a próxima após a conclusão."/><JourneyCalendar unlockedDay={unlockedDay} completedDays={completedDays} nextUnlockAt={nextUnlockAt} dayWorkout={dayWorkout} start={start}/><div className="section-heading"><div><span className="eyebrow">BIBLIOTECA DE MOVIMENTOS</span><h2>Treinos da jornada</h2></div></div><div className="search-box"><Search size={18}/><input value={query} onChange={e=>setQuery(e.target.value)} placeholder="Buscar por treino, foco ou nível..."/></div><div className="workout-grid">{items.map(w=><WorkoutCard key={w.title} workout={w} start={()=>{const day=Array.from({length:21},(_,i)=>i+1).find(d=>dayWorkout(d).title===w.title && d<=unlockedDay && !completedDays.includes(d));if(day)start(w,day)}}/>)}</div>{items.length===0&&<p className="empty-state">Não encontramos treinos com esse termo. Tente outra busca.</p>}</>;
 }
 
 function JourneyCalendar({unlockedDay,completedDays,nextUnlockAt,dayWorkout,start}:{unlockedDay:number;completedDays:number[];nextUnlockAt:string|null;dayWorkout:(day:number)=>Workout;start:(w:Workout,day?:number)=>void}) {
   const remaining = nextUnlockAt ? Math.max(0,new Date(nextUnlockAt).getTime()-Date.now()) : 0;
   const hours = Math.floor(remaining/3600000);
   const minutes = Math.floor((remaining%3600000)/60000);
-  return <section className="journey-panel"><div className="journey-summary"><div><span className="eyebrow">DIA 0 AO DIA 31</span><h3>{completedDays.length} de 31 treinos concluídos</h3><p>{nextUnlockAt ? `Próximo treino em aproximadamente ${hours}h ${minutes}min` : "Seu próximo treino liberado está esperando por você."}</p></div><div className="journey-progress"><span style={{width:(completedDays.length/31*100)+"%"}}/></div></div><div className="journey-calendar">{Array.from({length:32},(_,i)=>{const day=i;const isStart=day===0;const isDone=completedDays.includes(day);const isUnlocked=!isStart && day<=unlockedDay && !isDone;const isLocked=!isStart && !isDone && !isUnlocked;return <button key={day} className={`journey-day ${isStart?"journey-start":isDone?"journey-done":isUnlocked?"journey-unlocked":"journey-locked"}`} disabled={!isUnlocked} onClick={()=>start(dayWorkout(day),day)} aria-label={isStart?"Dia 0, início da jornada":`Dia ${day}: ${isDone?"concluído":isUnlocked?"desbloqueado":"bloqueado"}`}><span className="journey-day-number">{isStart?"INÍCIO":day}</span>{isDone?<Check size={17}/>:isLocked?<Lock size={16}/>:isStart?<Sparkles size={16}/>:<Dumbbell size={16}/>}<small>{isStart?"Dia 0":isDone?"Concluído":isLocked?"Bloqueado":"Liberado"}</small></button>})}</div></section>;
+  return <section className="journey-panel"><div className="journey-summary"><div><span className="eyebrow">DIA 0 AO DIA 21</span><h3>{completedDays.length} de 21 treinos concluídos</h3><p>{nextUnlockAt ? `Próximo treino em aproximadamente ${hours}h ${minutes}min` : "Seu próximo treino liberado está esperando por você."}</p></div><div className="journey-progress"><span style={{width:(completedDays.length/21*100)+"%"}}/></div></div><div className="journey-calendar">{Array.from({length:22},(_,i)=>{const day=i;const isStart=day===0;const isDone=completedDays.includes(day);const isUnlocked=!isStart && day<=unlockedDay && !isDone;const isLocked=!isStart && !isDone && !isUnlocked;return <button key={day} className={`journey-day ${isStart?"journey-start":isDone?"journey-done":isUnlocked?"journey-unlocked":"journey-locked"}`} disabled={!isUnlocked} onClick={()=>start(dayWorkout(day),day)} aria-label={isStart?"Dia 0, início da jornada":`Dia ${day}: ${isDone?"concluído":isUnlocked?"desbloqueado":"bloqueado"}`}><span className="journey-day-number">{isStart?"INÍCIO":day}</span>{isDone?<Check size={17}/>:isLocked?<Lock size={16}/>:isStart?<Sparkles size={16}/>:<Dumbbell size={16}/>}<small>{isStart?"Início":new Date(2026,10,16+day).toLocaleDateString("pt-BR",{day:"2-digit",month:"2-digit"})}</small><small>{isStart?"Dia 0":isDone?"Concluído":isLocked?"Bloqueado":"Liberado"}</small></button>})}</div></section>;
 }
 
 
@@ -424,8 +429,81 @@ function WorkoutCard({ workout, start }: { workout: Workout; start: () => void }
   return <article className="workout-card"><div className={`workout-art ${workout.color}`}><span>{workout.focus}</span><Dumbbell className="art-symbol" size={80}/></div><div className="workout-info"><div className="workout-meta"><span>{workout.level}</span><span><Clock3 size={12}/>{workout.time}</span></div><h3>{workout.title}</h3><p>{workout.description}</p><Button variant="link" className="card-action" onClick={start}>Começar treino <ArrowRight size={14}/></Button></div></article>;
 }
 
-function ExplorePage({ setGoal, goal, setTab, challengeStarted, challengeDay, onStartChallenge }: { setGoal: (goal: string) => void; goal: string; setTab: (tab: Tab) => void; start: (workout: Workout, day?: number) => void; challengeStarted: boolean; challengeDay: number; onStartChallenge: () => void }) {
-  return <><PageHeading kicker="ENCONTRE SEU CAMINHO" title="Movimento com propósito." description="Seu corpo, seus objetivos, seu ritmo."/><div className="goal-grid">{["Perder peso", "Ganhar massa", "Definição", "Fortalecimento", "Mobilidade"].map(item => <Button variant="ghost" key={item} className={`goal-card h-auto whitespace-normal ${goal === item ? "goal-selected" : ""}`} aria-pressed={goal === item} onClick={() => setGoal(item)}><span className="goal-symbol"><Target size={22}/></span><strong>{item}</strong><small>{goal === item ? "Seu objetivo atual" : "Uma nova direção"}</small><ChevronRight size={18}/></Button>)}</div><section className="challenge-card"><div className="challenge-icon"><Flame size={25}/></div><div><span className="eyebrow">CONSISTÊNCIA EM MOVIMENTO</span><h3>Desafio de 7 dias</h3><p>{challengeStarted ? `${challengeDay} de 7 treinos concluídos` : "Pequenos passos para criar uma rotina de movimento."}</p><div className="challenge-days">{Array.from({length: 7}, (_, i) => <span key={i} className={i < challengeDay ? "day-done" : i === challengeDay ? "day-current" : ""}>{i < challengeDay ? <Check size={12}/> : i + 1}</span>)}</div></div><Button className="button-primary" onClick={challengeStarted ? () => setTab("Treinos") : onStartChallenge}>{challengeStarted ? "Ver treinos" : "Começar desafio"}<ArrowRight size={16}/></Button></section></>;
+function JourneyPage({setTab,start,unlockedDay,completedDays,nextUnlockAt,dayWorkout}:{setTab:(tab:Tab)=>void;start:(workout:Workout,day?:number)=>void;unlockedDay:number;completedDays:number[];nextUnlockAt:string|null;dayWorkout:(day:number)=>Workout}) {
+  const quickWorkouts = workouts.filter(workout => {
+    const minutes = Number.parseInt(workout.time, 10);
+    return minutes >= 10 && minutes <= 20;
+  });
+  const recoveryWorkout = workouts.find(workout => workout.title === "Mobilidade e leveza") ?? workouts[0];
+  return <>
+    <PageHeading kicker="SEU PLANO DE 21 DIAS" title="Movimento com propósito." description="Um caminho progressivo de 17 de novembro a 7 de dezembro de 2026."/>
+    <section className="method-card">
+      <div className="method-icon"><Waves size={24}/></div>
+      <div className="method-copy">
+        <span className="eyebrow">O MÉTODO</span>
+        <h2>Ativação das fibras profundas</h2>
+        <p>Trabalhe o controle do tronco, quadril e postura com movimentos conscientes, respiração e amplitude confortável. A proposta é fortalecer e melhorar a coordenação, sem precisar de equipamentos.</p>
+        <small>Não existe exercício que, sozinho, “destrave” o metabolismo ou elimine gordura localizada. A evolução vem da combinação entre movimento, descanso e hábitos consistentes.</small>
+      </div>
+    </section>
+
+    <div className="section-heading"><div><span className="eyebrow">SEU PASSO A PASSO</span><h2>Cronograma Barriga Chapada · 21 dias</h2><p className="journey-date-range">17 de novembro a 7 de dezembro</p></div></div>
+    <JourneyCalendar unlockedDay={unlockedDay} completedDays={completedDays} nextUnlockAt={nextUnlockAt} dayWorkout={dayWorkout} start={start}/>
+    <p className="content-disclaimer">O cronograma organiza treinos e hábitos; não garante barriga chapada ou perda de gordura em um prazo específico. O corpo responde de maneiras diferentes.</p>
+
+    <div className="section-heading"><div><span className="eyebrow">MOVIMENTO SEM IMPACTO</span><h2>Recuperação e cuidado articular</h2></div></div>
+    <section className="recovery-card">
+      <div className="recovery-symbol"><Heart size={24}/></div>
+      <div className="recovery-copy"><h3>Mobilidade e leveza</h3><p>Uma rotina suave com círculos de ombros, gato e vaca, mobilidade de quadril e alongamentos confortáveis.</p><small>Movimento pode ajudar a manter a mobilidade, mas não substitui avaliação ou tratamento de dor persistente.</small></div>
+      <button className="button-primary" onClick={()=>start(recoveryWorkout!)}>Começar rotina <ArrowRight size={15}/></button>
+    </section>
+
+    <div className="section-heading"><div><span className="eyebrow">PARA DIAS CORRIDOS</span><h2>Rotinas de alta performance</h2><p>Treinos rápidos de 10 a 20 minutos, sem equipamentos.</p></div></div>
+    <div className="workout-grid">{quickWorkouts.map(workout=><WorkoutCard key={workout.title} workout={workout} start={()=>start(workout)}/>)}</div>
+    <section className="method-footer"><Leaf size={18}/><span>Consistência vale mais do que intensidade extrema. Comece no seu ritmo e respeite seus limites.</span><button className="text-link" onClick={()=>setTab("Treinos")}>Ver todos os treinos <ArrowRight size={15}/></button></section>
+  </>;
+}
+
+function FoodPage() {
+  const [expandedRecipe,setExpandedRecipe] = useState<string | null>(null);
+  const recipes = [
+    {title:"Aveia cremosa com banana",category:"Café da manhã",time:"5 min",ingredients:["3 colheres de aveia","1 banana","Iogurte natural ou bebida de sua preferência","1 colher de chia ou linhaça"],steps:"Misture a aveia com o iogurte e a chia. Cubra e deixe na geladeira por algumas horas ou durante a noite. Finalize com banana fatiada."},
+    {title:"Omelete colorida",category:"Café da manhã ou jantar",time:"10 min",ingredients:["2 ovos","Tomate picado","Espinafre ou cheiro-verde","Um fio de azeite"],steps:"Bata os ovos, misture os vegetais e cozinhe em frigideira antiaderente até firmar. Sirva com fruta ou pão, conforme sua fome."},
+    {title:"Prato brasileiro equilibrado",category:"Almoço",time:"20 min",ingredients:["Arroz","Feijão","Frango, ovo ou tofu","Salada e legumes variados"],steps:"Monte o prato combinando arroz e feijão, uma fonte de proteína e vegetais. Ajuste as quantidades à sua fome e rotina."},
+    {title:"Bowl de grão-de-bico",category:"Almoço ou jantar",time:"12 min",ingredients:["Grão-de-bico cozido","Pepino e tomate","Cenoura ralada","Limão e azeite","Salsinha"],steps:"Misture o grão-de-bico com os vegetais. Tempere com limão, azeite e salsinha. Pode acompanhar arroz ou folhas."},
+    {title:"Peixe com batata e legumes",category:"Almoço ou jantar",time:"25 min",ingredients:["Filé de peixe","Batata ou batata-doce","Brócolis ou abobrinha","Alho, limão e ervas"],steps:"Asse ou grelhe o peixe com alho, limão e ervas. Cozinhe a batata e os legumes até ficarem macios. Sirva juntos."},
+    {title:"Sopa prática de lentilha",category:"Jantar",time:"25 min",ingredients:["Lentilha","Cenoura e cebola","Alho","Tomate","Água e temperos a gosto"],steps:"Refogue alho, cebola e tomate. Acrescente lentilha, cenoura e água. Cozinhe até a lentilha ficar macia e ajuste os temperos."},
+  ];
+  const weekly = [
+    {day:"Segunda",breakfast:"Aveia com banana",lunch:"Arroz, feijão, frango e salada",dinner:"Omelete com legumes"},
+    {day:"Terça",breakfast:"Iogurte, fruta e aveia",lunch:"Peixe, batata e brócolis",dinner:"Sopa de lentilha"},
+    {day:"Quarta",breakfast:"Omelete e fruta",lunch:"Prato brasileiro equilibrado",dinner:"Bowl de grão-de-bico"},
+    {day:"Quinta",breakfast:"Aveia cremosa",lunch:"Frango, arroz e legumes",dinner:"Omelete colorida"},
+    {day:"Sexta",breakfast:"Pão, ovos e fruta",lunch:"Peixe, batata e salada",dinner:"Sopa de lentilha"},
+    {day:"Sábado",breakfast:"Iogurte, banana e chia",lunch:"Arroz, feijão e proteína",dinner:"Bowl de grão-de-bico"},
+    {day:"Domingo",breakfast:"Ovos e fruta",lunch:"Refeição caseira variada",dinner:"Sopa ou prato leve com proteína"},
+  ];
+  return <>
+    <PageHeading kicker="GUIA DE ALIMENTAÇÃO" title="Comer bem, sem complicar." description="Receitas práticas e combinações flexíveis para acompanhar sua rotina de movimento."/>
+    <section className="food-intro"><div className="food-intro-icon"><Utensils size={23}/></div><div><h2>Alimentação metabólica, na prática</h2><p>Monte refeições variadas com alimentos in natura ou minimamente processados, incluindo frutas, verduras, legumes, feijões, cereais e fontes de proteína. Não é necessário seguir uma dieta rígida nem cortar grupos alimentares.</p><a href="https://www.gov.br/saude/pt-br/assuntos/saude-brasil/publicacoes-para-promocao-a-saude/guia_alimentar_populacao_brasileira_2ed.pdf/view" target="_blank" rel="noreferrer">Consultar o Guia Alimentar do Ministério da Saúde ↗</a></div></section>
+    <div className="section-heading"><div><span className="eyebrow">RECEITAS DO DIA A DIA</span><h2>Ideias fáceis de preparar</h2></div></div>
+    <div className="recipe-grid">{recipes.map(recipe=><article className="recipe-card" key={recipe.title}><div className="recipe-card-top"><span>{recipe.category}</span><small>{recipe.time}</small></div><h3>{recipe.title}</h3><p>{recipe.ingredients.slice(0,3).join(" · ")}</p><button className="text-link" onClick={()=>setExpandedRecipe(expandedRecipe===recipe.title?null:recipe.title)}>{expandedRecipe===recipe.title?"Fechar receita":"Ver ingredientes e preparo"} <ChevronRight size={15}/></button>{expandedRecipe===recipe.title&&<div className="recipe-details"><strong>Ingredientes</strong><ul>{recipe.ingredients.map(item=><li key={item}>{item}</li>)}</ul><strong>Preparo</strong><p>{recipe.steps}</p></div>}</article>)}</div>
+    <div className="section-heading"><div><span className="eyebrow">CRONOGRAMA DE ALIMENTAÇÃO INTELIGENTE</span><h2>Uma semana de ideias</h2></div></div>
+    <div className="weekly-meal-list">{weekly.map(day=><article className="weekly-meal" key={day.day}><strong>{day.day}</strong><div><span><b>Café:</b> {day.breakfast}</span><span><b>Almoço:</b> {day.lunch}</span><span><b>Jantar:</b> {day.dinner}</span></div></article>)}</div>
+    <p className="content-disclaimer">Este é um exemplo geral, não uma dieta clínica ou 100% personalizada. Ajuste por preferências, alergias, condições de saúde e orientação de nutricionista quando necessário.</p>
+  </>;
+}
+
+function BonusesPage({setTab}:{setTab:(tab:Tab)=>void}) {
+  return <>
+    <PageHeading kicker="CONTEÚDOS EXTRAS" title="Seus bônus exclusivos." description="Materiais complementares para apoiar sua rotina, organização e bem-estar."/>
+    <div className="bonus-grid">
+      <article className="bonus-card"><div className="bonus-icon"><Leaf size={23}/></div><span className="eyebrow">BÔNUS 01</span><h3>Chá Asiático Anticelulite</h3><p>Uma infusão aromática de gengibre, hortelã e limão para acompanhar seu momento de pausa e hidratação.</p><div className="tea-recipe"><strong>Como preparar</strong><p>Adicione 2 a 3 fatias finas de gengibre e algumas folhas de hortelã a uma xícara de água quente. Deixe em infusão por 5 a 7 minutos e finalize com limão.</p></div><small className="bonus-note">O chá não elimina celulite nem queima gordura. É uma bebida opcional; não substitui água, alimentação ou tratamento. Em caso de gestação, uso de medicamentos ou condição de saúde, confirme a segurança de infusões com um profissional.</small></article>
+      <article className="bonus-card"><div className="bonus-icon"><BookOpen size={23}/></div><span className="eyebrow">BÔNUS 02</span><h3>Guia de Alimentação Adaptável</h3><p>Receitas e combinações simples para adaptar às suas preferências, sem cardápios restritivos ou promessas de emagrecimento acelerado.</p><button className="button-primary" onClick={()=>setTab("Alimentação")}>Abrir receitas <ArrowRight size={15}/></button></article>
+      <article className="bonus-card"><div className="bonus-icon"><CalendarDays size={23}/></div><span className="eyebrow">BÔNUS 03</span><h3>Cronograma de Alimentação Inteligente</h3><p>Uma semana de ideias para organizar café da manhã, almoço e jantar com variedade e praticidade.</p><button className="button-primary" onClick={()=>setTab("Alimentação")}>Ver cronograma <ArrowRight size={15}/></button></article>
+      <article className="bonus-card"><div className="bonus-icon"><Heart size={23}/></div><span className="eyebrow">BÔNUS 04</span><h3>Suporte ao aluno</h3><p>Espaço para orientações sobre o aplicativo e sua jornada.</p><small className="bonus-note">O canal de atendimento ainda não está conectado nesta versão. Adicione o WhatsApp ou contato oficial da equipe antes de anunciar suporte 24 horas.</small></article>
+    </div>
+  </>;
 }
 
 function ProgressPage({ done, history }: { done: string[]; history: WorkoutSession[] }) {
