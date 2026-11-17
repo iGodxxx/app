@@ -23,7 +23,7 @@ export const Route = createFileRoute("/")({
 
 type Tab = "Início" | "Jornada" | "Treinos" | "Alimentação" | "Bônus" | "Evolução" | "Perfil";
 type Workout = { title: string; level: string; time: string; focus: string; color: string; description: string; exercises: string[] };
-type WorkoutSession = { id: string; title: string; completedAt: string; duration: number; calories?: number; caloriesMin?: number; caloriesMax?: number; weightKg?: number };
+type WorkoutSession = { id: string; title: string; completedAt: string; duration: number; calories?: number; caloriesMin?: number; caloriesMax?: number; weightKg?: number; isExtra?: boolean };
 
 const workouts: Workout[] = [
   { title: "Corpo inteiro em movimento", level: "Iniciante", time: "18 min", focus: "Full body", color: "peach", description: "Uma sequência leve para ativar o corpo todo e construir consistência.", exercises: ["Aquecimento articular", "Agachamento livre", "Flexão inclinada", "Ponte de glúteos", "Prancha com joelhos"] },
@@ -56,6 +56,7 @@ export function App() {
   const [nextUnlockAt, setNextUnlockAt] = useState<string | null>(null);
   const [completedDays, setCompletedDays] = useState<number[]>([]);
   const [activeDay, setActiveDay] = useState(1);
+  const [activeIsExtra, setActiveIsExtra] = useState(false);
   const [challengeStarted, setChallengeStarted] = useState(false);
   const [query, setQuery] = useState("");
   const [goal, setGoal] = useState("Definição");
@@ -97,20 +98,22 @@ export function App() {
     if (!workout) throw new Error("Treino indisponível para este dia.");
     return workout;
   };
-  const start = (w: Workout, day = unlockedDay) => { if (day > unlockedDay || day < 1 || completedDays.includes(day)) return; setActiveDay(day); setActive(w); setStep(0); };
+  const start = (w: Workout, day = unlockedDay) => { if (day > unlockedDay || day < 1 || completedDays.includes(day)) return; setActiveDay(day); setActiveIsExtra(false); setActive(w); setStep(0); };
+  const startExtra = (w: Workout) => { setActiveDay(0); setActiveIsExtra(true); setActive(w); setStep(0); };
   const finish = () => {
     if (active) {
-      if (!done.includes(active.title)) setDone([...done, active.title]);
-      if (!completedDays.includes(activeDay)) {
+      if (!done.includes(active.title)) setDone(previous => [...previous, active.title]);
+      if (!activeIsExtra && !completedDays.includes(activeDay)) {
         setCompletedDays(previous => [...previous, activeDay]);
         if (activeDay < 21) setNextUnlockAt(new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString());
       }
       const duration = Number.parseInt(active.time, 10) || 0;
       const calorieRange = weightKg !== null && weightKg >= 30 && weightKg <= 250 ? estimateWorkoutCalories(active, duration, weightKg) : undefined;
-      setHistory(previous => [...previous, { id: `${Date.now()}-${previous.length}`, title: active.title, completedAt: new Date().toISOString(), duration, ...(calorieRange ? { caloriesMin: calorieRange.min, caloriesMax: calorieRange.max, weightKg: weightKg ?? undefined } : {}) }]);
+      setHistory(previous => [...previous, { id: `${Date.now()}-${previous.length}`, title: active.title, completedAt: new Date().toISOString(), duration, ...(activeIsExtra ? { isExtra: true } : {}), ...(calorieRange ? { caloriesMin: calorieRange.min, caloriesMax: calorieRange.max, weightKg: weightKg ?? undefined } : {}) }]);
     }
-    if (challengeStarted && challengeDay < 7) setChallengeDay(challengeDay + 1);
+    if (!activeIsExtra && challengeStarted && challengeDay < 7) setChallengeDay(challengeDay + 1);
     setActive(null);
+    setActiveIsExtra(false);
     setTab("Evolução");
   };
 
@@ -127,7 +130,7 @@ export function App() {
         <div className="content">
           {tab === "Início" && <HomePage done={done} history={history} start={start} setTab={setTab} unlockedDay={unlockedDay} completedDays={completedDays} nextUnlockAt={nextUnlockAt} dayWorkout={dayWorkout} weightKg={weightKg} />}
           {tab === "Treinos" && <WorkoutPage items={filtered} query={query} setQuery={setQuery} start={start} unlockedDay={unlockedDay} completedDays={completedDays} nextUnlockAt={nextUnlockAt} dayWorkout={dayWorkout} />}
-          {tab === "Jornada" && <JourneyPage setTab={setTab} start={start} unlockedDay={unlockedDay} completedDays={completedDays} nextUnlockAt={nextUnlockAt} dayWorkout={dayWorkout} />}
+          {tab === "Jornada" && <JourneyPage setTab={setTab} start={start} startExtra={startExtra} unlockedDay={unlockedDay} completedDays={completedDays} nextUnlockAt={nextUnlockAt} dayWorkout={dayWorkout} history={history} weightKg={weightKg} />}
           {tab === "Alimentação" && <FoodPage />}
           {tab === "Bônus" && <BonusesPage setTab={setTab} />}
           {tab === "Evolução" && <ProgressPage done={done} history={history} />}
@@ -429,7 +432,7 @@ function WorkoutCard({ workout, start }: { workout: Workout; start: () => void }
   return <article className="workout-card"><div className={`workout-art ${workout.color}`}><span>{workout.focus}</span><Dumbbell className="art-symbol" size={80}/></div><div className="workout-info"><div className="workout-meta"><span>{workout.level}</span><span><Clock3 size={12}/>{workout.time}</span></div><h3>{workout.title}</h3><p>{workout.description}</p><Button variant="link" className="card-action" onClick={start}>Começar treino <ArrowRight size={14}/></Button></div></article>;
 }
 
-function JourneyPage({setTab,start,unlockedDay,completedDays,nextUnlockAt,dayWorkout}:{setTab:(tab:Tab)=>void;start:(workout:Workout,day?:number)=>void;unlockedDay:number;completedDays:number[];nextUnlockAt:string|null;dayWorkout:(day:number)=>Workout}) {
+function JourneyPage({setTab,start,startExtra,unlockedDay,completedDays,nextUnlockAt,dayWorkout,history,weightKg}:{setTab:(tab:Tab)=>void;start:(workout:Workout,day?:number)=>void;startExtra:(workout:Workout)=>void;unlockedDay:number;completedDays:number[];nextUnlockAt:string|null;dayWorkout:(day:number)=>Workout;history:WorkoutSession[];weightKg:number|null}) {
   const quickWorkouts = workouts.filter(workout => {
     const minutes = Number.parseInt(workout.time, 10);
     return minutes >= 10 && minutes <= 20;
@@ -451,6 +454,11 @@ function JourneyPage({setTab,start,unlockedDay,completedDays,nextUnlockAt,dayWor
     <JourneyCalendar unlockedDay={unlockedDay} completedDays={completedDays} nextUnlockAt={nextUnlockAt} dayWorkout={dayWorkout} start={start}/>
     <div className="section-heading"><div><span className="eyebrow">DIA A DIA</span><h2>O que fazer em cada etapa</h2><p>Conclua o treino do dia liberado para avançar no cronograma.</p></div></div>
     <div className="day-plan-list">{["Consciência corporal e começo leve","Pernas e glúteos com controle","Estabilidade do core","Braços e alinhamento postural","Mobilidade e respiração","Cardio sem impacto","Glúteos e quadril","Força do corpo inteiro","Rotina express de corpo inteiro","Core e postura","Mobilidade de quadril","Pernas com amplitude confortável","Estabilidade abdominal","Braços, ombros e postura","Recuperação e mobilidade","Cardio leve e coordenação","Glúteos sem impacto","Força global progressiva","Corpo inteiro express","Core e respiração","Fechamento e revisão da jornada"].map((focus,index)=>{const day=index+1;const workout=dayWorkout(day);const isDone=completedDays.includes(day);const isUnlocked=day<=unlockedDay&&!isDone;const date=new Date(2026,10,16+day).toLocaleDateString("pt-BR",{day:"2-digit",month:"short"});return <article className={`day-plan-item ${isDone?"is-done":isUnlocked?"is-unlocked":"is-locked"}`} key={day}><div className="day-plan-meta"><span>DIA {String(day).padStart(2,"0")} · {date}</span><small>{isDone?"Concluído":isUnlocked?"Liberado":"Bloqueado"}</small></div><strong>{focus}</strong><p>{workout.title} · {workout.time}</p><button type="button" disabled={!isUnlocked} onClick={()=>start(workout,day)}>{isDone?"Etapa concluída":isUnlocked?"Começar treino":"Aguarde a liberação"}</button></article>})}</div>
+    <section className="extra-workouts-panel">
+      <div className="extra-workouts-heading"><div><span className="eyebrow">ACESSO LIVRE</span><h2>Treinos extras</h2><p>Quer repetir um treino ou fazer uma etapa antes da liberação? Escolha abaixo. Isso não altera o desbloqueio nem marca um dia da jornada como concluído.</p></div><span className="extra-count"><Dumbbell size={16}/>{history.filter(session=>session.isExtra).length} extras feitos</span></div>
+      <div className="extra-workout-grid">{workouts.map(workout=>{const sessions=history.filter(session=>session.title===workout.title);const duration=Number.parseInt(workout.time,10)||0;const estimate=weightKg!==null&&weightKg>=30&&weightKg<=250?estimateWorkoutCalories(workout,duration,weightKg):null;return <article className="extra-workout-card" key={workout.title}><div className="extra-workout-top"><span>{workout.focus}</span><small>{sessions.length? `Feito ${sessions.length}x`:"Disponível para repetir"}</small></div><h3>{workout.title}</h3><p><Clock3 size={13}/>{duration} min <span>·</span> {workout.level}</p><div className="extra-workout-calories"><Flame size={14}/>{estimate? `~${estimate.min}–${estimate.max} kcal por sessão`:"Informe seu peso para estimar kcal"}</div><button type="button" onClick={()=>startExtra(workout)}>Fazer treino extra <ArrowRight size={14}/></button></article>})}</div>
+      <small className="extra-workouts-note">Cada repetição concluída é registrada separadamente. O tempo e a faixa de kcal são somados novamente no seu histórico e na sua evolução.</small>
+    </section>
     <p className="content-disclaimer">O cronograma organiza treinos e hábitos; não garante barriga chapada ou perda de gordura em um prazo específico. O corpo responde de maneiras diferentes.</p>
 
     <div className="section-heading"><div><span className="eyebrow">MOVIMENTO SEM IMPACTO</span><h2>Recuperação e cuidado articular</h2></div></div>
@@ -514,7 +522,7 @@ function ProgressPage({ done, history }: { done: string[]; history: WorkoutSessi
   const calorieSessions = history.filter(session => session.caloriesMin !== undefined || session.calories !== undefined).length;
   const totalCaloriesMin = history.reduce((sum, session) => sum + (session.caloriesMin ?? session.calories ?? 0), 0);
   const totalCaloriesMax = history.reduce((sum, session) => sum + (session.caloriesMax ?? session.calories ?? 0), 0);
-  return <><PageHeading kicker="SUA EVOLUÇÃO" title="Cada movimento conta." description="Celebre os passos que você já deu."/><div className="stats-grid"><Stat icon={Dumbbell} label="Treinos concluídos" value={String(totalSessions)} note="Sua consistência"/><Stat icon={Clock3} label="Tempo em movimento" value={`${totalMinutes} min`} note="Tempo dedicado a você"/><Stat icon={Award} label="Treinos diferentes" value={String(done.length)} note="Novas conquistas"/></div><div className="calorie-summary"><div className="calorie-summary-icon"><Flame size={22}/></div><div><span className="eyebrow">GASTO CALÓRICO ESTIMADO</span><strong>{totalCaloriesMax ? `${totalCaloriesMin.toLocaleString("pt-BR")}–${totalCaloriesMax.toLocaleString("pt-BR")} kcal` : "0 kcal"}</strong><small>{calorieSessions ? `Faixa acumulada em ${calorieSessions} treino(s) registrado(s)` : "Informe seu peso e conclua um treino para começar a estimativa"}</small></div></div><section className="progress-panel"><div className="section-heading"><h2>Histórico de treinos</h2></div>{totalSessions === 0 ? <div className="empty-state"><div className="empty-icon"><Activity size={25}/></div><h3>Sua jornada está começando</h3><p>Seu primeiro treino será uma nova conquista.</p></div> : history.length > 0 ? [...history].reverse().map(session => <div className="history-row" key={session.id}><span className="history-check"><Check size={16}/></span><div><strong>{session.title}</strong><small>{session.duration} min · {session.caloriesMin !== undefined ? `~${session.caloriesMin}–${session.caloriesMax ?? session.caloriesMin} kcal estimadas` : session.calories !== undefined ? `~${session.calories} kcal estimadas` : "Calorias não estimadas"} · Concluído</small></div><span className="history-date">{new Date(session.completedAt).toLocaleDateString("pt-BR")}</span></div>) : done.map(title => <div className="history-row" key={title}><span className="history-check"><Check size={16}/></span><div><strong>{title}</strong><small>Concluído</small></div></div>)}</section><p className="gentle-reminder"><Heart size={16}/>Faixa aproximada: o gasto real depende da intensidade, ritmo, pausas e características individuais.</p></>;
+  return <><PageHeading kicker="SUA EVOLUÇÃO" title="Cada movimento conta." description="Celebre os passos que você já deu."/><div className="stats-grid"><Stat icon={Dumbbell} label="Treinos concluídos" value={String(totalSessions)} note="Sua consistência"/><Stat icon={Clock3} label="Tempo em movimento" value={`${totalMinutes} min`} note="Tempo dedicado a você"/><Stat icon={Award} label="Treinos diferentes" value={String(done.length)} note="Novas conquistas"/></div><div className="calorie-summary"><div className="calorie-summary-icon"><Flame size={22}/></div><div><span className="eyebrow">GASTO CALÓRICO ESTIMADO</span><strong>{totalCaloriesMax ? `${totalCaloriesMin.toLocaleString("pt-BR")}–${totalCaloriesMax.toLocaleString("pt-BR")} kcal` : "0 kcal"}</strong><small>{calorieSessions ? `Faixa acumulada em ${calorieSessions} treino(s) registrado(s)` : "Informe seu peso e conclua um treino para começar a estimativa"}</small></div></div><section className="progress-panel"><div className="section-heading"><h2>Histórico de treinos</h2></div>{totalSessions === 0 ? <div className="empty-state"><div className="empty-icon"><Activity size={25}/></div><h3>Sua jornada está começando</h3><p>Seu primeiro treino será uma nova conquista.</p></div> : history.length > 0 ? [...history].reverse().map(session => <div className="history-row" key={session.id}><span className="history-check"><Check size={16}/></span><div><strong>{session.title}</strong><small>{session.duration} min · {session.isExtra ? "Treino extra · " : ""}{session.caloriesMin !== undefined ? `~${session.caloriesMin}–${session.caloriesMax ?? session.caloriesMin} kcal estimadas` : session.calories !== undefined ? `~${session.calories} kcal estimadas` : "Calorias não estimadas"} · Concluído</small></div><span className="history-date">{new Date(session.completedAt).toLocaleDateString("pt-BR")}</span></div>) : done.map(title => <div className="history-row" key={title}><span className="history-check"><Check size={16}/></span><div><strong>{title}</strong><small>Concluído</small></div></div>)}</section><p className="gentle-reminder"><Heart size={16}/>Faixa aproximada: o gasto real depende da intensidade, ritmo, pausas e características individuais.</p></>;
 }
 
 function ProfilePage({ goal, level, days, weightKg, setOnboarding }: { goal: string; level: string; days: string; weightKg: number | null; setOnboarding: (open: boolean) => void }) {
