@@ -141,7 +141,7 @@ function ExerciseDemo({name}:{name:string}) {
     : /agachamento isométrico/.test(normalized)
     ? { src: "https://www.youtube-nocookie.com/embed/p7B3hja6s4U", label: "Agachamento isométrico", credit: "YouTube", source: "https://youtu.be/p7B3hja6s4U", youtube: true }
     : /agachamento sumô/.test(normalized)
-    ? { src: "https://videos.pexels.com/video-files/6525519/6525519-hd_1080_1920_30fps.mp4", label: "Agachamento com peso corporal", credit: "Polina Tankilevitch", source: "https://www.pexels.com/video/young-woman-exercising-6525519/" }
+    ? { src: "https://www.youtube-nocookie.com/embed/E4Ls2VkNSHE", label: "Agachamento sumô", credit: "Anand Physical Therapy Academy", source: "https://youtu.be/E4Ls2VkNSHE", youtube: true }
     : /afundo alternado/.test(normalized)
     ? { src: "https://www.youtube-nocookie.com/embed/9jJWonbDUb4", label: "Avanço alternado", credit: "YouTube", source: "https://youtu.be/9jJWonbDUb4", youtube: true }
     : /ponte unilateral/.test(normalized)
@@ -157,7 +157,7 @@ function ExerciseDemo({name}:{name:string}) {
     : /flexão inclinada/.test(normalized)
     ? { src: "https://videos.pexels.com/video-files/6740158/6740158-hd_1920_1080_25fps.mp4", label: "Flexão inclinada", credit: "Mikhail Nilov", source: "https://www.pexels.com/video/a-woman-exercising-in-the-gym-6740158/" }
     : /prancha com joelhos/.test(normalized)
-    ? { src: "https://videos.pexels.com/video-files/6437916/6437916-uhd_2160_3840_24fps.mp4", label: "Demonstração de prancha", credit: "Marta Wave", source: "https://www.pexels.com/video/woman-doing-a-plank-position-6437916/" }
+    ? { src: "https://www.youtube-nocookie.com/embed/fTDkzk5GcEY", label: "Prancha com joelhos", credit: "Joanna Soh", source: "https://youtu.be/fTDkzk5GcEY", youtube: true }
     : /aquecimento articular/.test(normalized)
     ? { src: "https://www.youtube-nocookie.com/embed/oLu9kwDzBdg", label: "Aquecimento geral", credit: "NHS", source: "https://youtu.be/oLu9kwDzBdg", youtube: true }
     : /dead bug/.test(normalized)
