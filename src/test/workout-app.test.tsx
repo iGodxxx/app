@@ -11,7 +11,9 @@ describe("Workout app regression", () => {
   it("renders the initial page and every tab without undefined components", () => {
     render(<App />);
     for (const label of ["Treinos", "Explorar", "Evolução", "Perfil", "Início"]) {
-      fireEvent.click(screen.getAllByRole("button", { name: label, exact: true })[0] as HTMLElement);
+      const button = screen.getAllByRole("button", { name: new RegExp(`^${label}$`) })[0];
+      if (!button) throw new Error(`Missing tab: ${label}`);
+      fireEvent.click(button);
       expect(screen.getByRole("main")).toBeTruthy();
     }
   });
