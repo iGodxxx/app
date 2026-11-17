@@ -479,3 +479,138 @@ body{font-family:Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,
 .journey-day.journey-locked{background:#f1f1ed;color:#aeb1b8;border-style:dashed;cursor:not-allowed}
 .journey-day:disabled{opacity:1}
 @media(max-width:700px){.journey-panel{padding:14px;margin:14px 0 24px}.journey-summary{grid-template-columns:1fr;gap:12px}.journey-calendar{grid-template-columns:repeat(4,minmax(0,1fr));gap:7px}.journey-day{min-height:72px}.journey-day small{font-size:7px}}
+
+
+/* ── Visual refresh: editorial fitness / warm studio ── */
+:root{
+  --background:oklch(0.975 0.012 70);
+  --foreground:oklch(0.23 0.025 310);
+  --card:oklch(0.995 0.006 75);
+  --card-foreground:oklch(0.23 0.025 310);
+  --primary:oklch(0.62 0.19 355);
+  --primary-foreground:oklch(0.99 0.005 75);
+  --secondary:oklch(0.94 0.025 350);
+  --secondary-foreground:oklch(0.3 0.035 315);
+  --muted:oklch(0.95 0.012 65);
+  --muted-foreground:oklch(0.53 0.025 315);
+  --accent:oklch(0.93 0.055 355);
+  --accent-foreground:oklch(0.3 0.035 315);
+  --border:oklch(0.89 0.018 55);
+  --input:oklch(0.89 0.018 55);
+  --ring:oklch(0.62 0.19 355)
+}
+body,.app-shell{background:#f5f1eb;color:#25232b}
+body{font-family:Inter,"Avenir Next",ui-sans-serif,system-ui,sans-serif;letter-spacing:-.01em}
+.sidebar{width:256px;background:#24212b;border:0;padding:34px 22px;color:#f9f4ef}
+.brand{color:#fff8f1;font-size:18px;letter-spacing:-.8px}
+.brand-light{color:#ff8eae}
+.brand small{color:#aaa1ad}
+.brand-mark{background:#ff6f98;color:#251f2a;border-radius:13px;box-shadow:0 8px 22px #ff6f9838}
+.side-label{color:#8d8492;margin:58px 0 13px 12px}
+.side-link{color:#bcb4c1;border-radius:11px;padding:14px 15px;font-weight:550;transition:background .18s,color .18s}
+.side-link:hover{background:#ffffff0d;color:white}
+.side-link.selected{background:#ff6f98;color:#241f29;box-shadow:0 7px 18px #0002;font-weight:800}
+.side-count{background:#28232d;color:#ff9ab6}
+.side-quote{background:#302b37;border:1px solid #403947;color:#c7aeb9;border-radius:14px;font-family:Georgia,serif}
+.profile-mini{color:#fff}
+.profile-mini small{color:#a9a0ad}
+.profile-mini>svg{color:#aaa0ad}
+.avatar{background:#493441;color:#ff9ab6}
+.main-area{margin-left:256px;background:#f5f1eb}
+.topbar{height:74px;background:#f9f6f1eF;border:0;border-bottom:1px solid #e9e1d8;padding:0 5.4%;backdrop-filter:blur(14px)}
+.breadcrumb{color:#7e7580;font-weight:600}
+.breadcrumb span{color:#c7b9bc}
+.streak{background:#fff;border:1px solid #e9e0d8;border-radius:30px;padding:9px 13px;color:#514653;font-size:11px}
+.streak svg{color:#f36c8f}
+.icon-button{background:#28242e;color:#fff;border-radius:12px;width:38px;height:38px}
+.content{max-width:1320px;padding:42px 5.4% 76px}
+.eyebrow,.side-label{letter-spacing:2px;font-size:9px}
+.eyebrow{color:#c14f75}
+.welcome-row{margin-bottom:30px}
+.welcome-row h1,.page-heading h1{font-family:Inter,"Avenir Next",sans-serif;font-size:clamp(30px,3vw,43px);font-weight:850;letter-spacing:-2px;line-height:1.06;color:#27232d;margin:11px 0 9px}
+.welcome-row h1 em{font-style:normal;color:#df5e85}
+.welcome-row p,.page-heading p{font-size:13px;color:#817781;line-height:1.7}
+.welcome-flower{color:#ed7899;font-size:58px;transform:rotate(-12deg)}
+.hero-card{min-height:300px;border-radius:24px;background:#292530;color:#fff8f2;box-shadow:0 18px 38px #3424321a}
+.hero-card:after{content:"";position:absolute;width:420px;height:420px;border:1px solid #ffffff18;border-radius:50%;right:-80px;top:-190px;box-shadow:0 0 0 36px #ffffff08,0 0 0 78px #ffffff06}
+.hero-copy{padding:42px 44px;max-width:58%}
+.hero-tag{color:#ff9ab5;background:#ffffff10;border:1px solid #ffffff16;padding:8px 11px;border-radius:30px;font-size:9px}
+.hero-copy h2{font-family:Inter,sans-serif;font-weight:850;font-size:clamp(30px,3.2vw,43px);letter-spacing:-1.8px;line-height:1.05;color:#fff8f2;margin:21px 0 12px}
+.hero-copy p{color:#c9bdc9;font-size:12px;max-width:360px}
+.button-light{background:#ff7298;color:#251f29;border-radius:11px;padding:13px 18px;font-size:11px;font-weight:850}
+.hero-illustration{right:2%;width:42%}
+.sun-disc{width:220px;height:220px;right:12%;top:42px;background:#ff8eaa;opacity:.96;box-shadow:0 0 0 18px #ff8eaa18}
+.hero-person{font-size:160px;color:#332b39;opacity:.92;text-shadow:4px 7px 0 #ffffff22;z-index:1}
+.hero-caption{color:#f9d4df;z-index:2}
+.stats-grid{gap:15px;margin:22px 0 42px}
+.stat-card{background:#fffdfa;border:1px solid #eae2d9;border-radius:17px;padding:20px 21px;box-shadow:0 5px 16px #392b2608}
+.stat-top{color:#827983;font-size:10px;font-weight:650}
+.stat-top svg{color:#e66a8d}
+.stat-card>strong{font-family:Inter,sans-serif;font-size:27px;font-weight:850;letter-spacing:-1px;color:#29242f}
+.stat-card>small{color:#9a9098}
+.section-heading{margin-bottom:18px}
+.section-heading h2{font-family:Inter,sans-serif;font-weight:850;font-size:22px;letter-spacing:-.8px;color:#29242f}
+.text-link{color:#c34f75;font-weight:800}
+.journey-panel{background:#fffdfa;border:1px solid #e9e1d8;border-radius:19px;padding:22px;box-shadow:0 7px 22px #34243208;margin:18px 0 34px}
+.journey-summary h3{font-family:Inter,sans-serif;font-size:17px;font-weight:850;letter-spacing:-.5px;color:#29242f}
+.journey-summary p{color:#827983;font-size:11px}
+.journey-progress{background:#f2e8e8;height:8px}
+.journey-progress span{background:linear-gradient(90deg,#f26e91,#c34f75)}
+.journey-day{border-radius:12px;min-height:83px;transition:transform .18s,box-shadow .18s}
+.journey-day-number{font-size:14px}
+.journey-day small{font-size:8px;letter-spacing:.3px}
+.journey-day.journey-start{background:#292530;border-color:#292530;color:#ff9ab5}
+.journey-day.journey-done{background:#e5f0e8;border-color:#d4e6d9;color:#427454}
+.journey-day.journey-unlocked{background:#fff0f4;border:1.5px solid #ed9ab2;color:#b53e68}
+.journey-day.journey-unlocked:hover{transform:translateY(-3px);box-shadow:0 8px 17px #d75b8020}
+.journey-day.journey-locked{background:#f5f2ee;border-color:#e9e4dd;color:#b6afb2}
+.workout-grid{grid-template-columns:repeat(3,minmax(0,1fr));gap:18px}
+.workout-card{background:#fffdfa;border:1px solid #e9e1d8;border-radius:18px;box-shadow:0 5px 16px #34243208}
+.workout-card:hover{transform:translateY(-4px);box-shadow:0 14px 28px #34243212}
+.workout-art{height:150px;padding:17px}
+.workout-art>span{background:#fffdf0d9;color:#514650;font-weight:750}
+.workout-art.peach{background:linear-gradient(135deg,#f8d7ca,#f2b8a9)}
+.workout-art.lilac{background:linear-gradient(135deg,#e7d9f1,#c9b6df)}
+.workout-art.sage{background:linear-gradient(135deg,#dce9d9,#b8d1be)}
+.workout-art.rose{background:linear-gradient(135deg,#f6d4df,#ed9fb9)}
+.art-symbol{font-size:112px;color:#fff9}
+.workout-info{padding:18px 18px 19px}
+.workout-meta{color:#91858d;font-weight:650}
+.workout-info h3{font-family:Inter,sans-serif;font-weight:800;font-size:16px;letter-spacing:-.4px;color:#302a34}
+.workout-info p{font-size:11px;color:#877d85;line-height:1.65}
+.card-action{color:#c34f75;font-weight:850;font-size:11px}
+.search-box{height:50px;background:#fffdfa;border:1px solid #e8dfd7;border-radius:13px;color:#c45b7b}
+.search-box input{color:#3e3540}
+.page-heading{margin:8px 0 25px}
+.page-heading h1{font-size:clamp(31px,3vw,42px)}
+.bottom-note{background:#eee5e6;color:#806c78;border-radius:13px;padding:17px 19px}
+.bottom-note svg{color:#cf6284}
+.goal-card,.challenge-card,.progress-panel,.profile-card,.settings-list{background:#fffdfa;border:1px solid #e9e1d8;border-radius:17px;box-shadow:0 5px 16px #34243208}
+.goal-card{color:#302a34}
+.goal-card strong,.challenge-card h3{font-family:Inter,sans-serif;font-weight:800;letter-spacing:-.4px}
+.goal-symbol,.challenge-icon,.empty-icon{background:#fff0f4;color:#cb5b7d}
+.goal-selected{border-color:#e58ba6;background:#fff5f7}
+.challenge-card{background:linear-gradient(105deg,#f8e7eb,#fffdfa)}
+.button-primary{background:#e85f87;color:#fff;border-radius:11px;font-weight:800;box-shadow:0 6px 15px #df638322}
+.button-secondary{background:#f0e9e8;color:#5f515d;border-radius:11px}
+.history-row{border-color:#eee7e1}
+.history-check{background:#e8f2e9;color:#4f8a60}
+.profile-card h2{font-family:Inter,sans-serif;font-weight:800}
+.profile-badge{background:#fff0f4;color:#bd4f74}
+.settings-list{padding:0 22px}
+.privacy-note{background:#f3e9eb;color:#806b77;border-radius:13px}
+.modal-backdrop{background:#201b26b8;backdrop-filter:blur(9px)}
+.workout-modal,.settings-modal{background:#fffdfa;border:1px solid #f2e7e2;border-radius:22px;box-shadow:0 25px 80px #17121d45}
+.modal-head{color:#302a34}
+.exercise-demo{border-radius:17px;overflow:hidden}
+.tip-box{background:#fff0f4;border:1px solid #f4d9e2;color:#6d5360;border-radius:13px}
+.safety-hint{color:#8d777f}
+.mobile-nav{background:#292530;border-top:1px solid #403946}
+.mobile-link{color:#aaa0ad}
+.mobile-link.active{color:#ff85a7}
+.mobile-brand{color:#292530;font-weight:850;letter-spacing:-.6px}
+@media(max-width:1050px){.workout-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.hero-copy{max-width:62%}}
+@media(max-width:700px){
+  .sidebar{display:none}.main-area{margin-left:0}.topbar{height:60px;padding:0 18px}.breadcrumb{display:none}.mobile-brand{display:block;font-size:14px}.top-actions{gap:9px}.streak{padding:8px 10px;font-size:10px}.content{padding:27px 17px 96px}.welcome-row{margin-bottom:20px}.welcome-row h1{font-size:30px;letter-spacing:-1.4px}.welcome-row p{font-size:11px;max-width:280px}.welcome-flower{font-size:42px}.hero-card{min-height:260px;border-radius:19px}.hero-copy{padding:28px 23px;max-width:72%}.hero-copy h2{font-size:29px}.hero-copy p{font-size:10px}.hero-illustration{right:-13%;width:52%;opacity:.7}.sun-disc{width:145px;height:145px;top:65px}.hero-person{font-size:115px}.hero-caption{font-size:6px;right:4%}.stats-grid{gap:8px;margin:15px 0 29px}.stat-card{padding:13px 11px;border-radius:13px}.stat-top{font-size:9px}.stat-top svg{width:14px}.stat-card>strong{font-size:20px;margin:10px 0 3px}.stat-card>small{font-size:8px}.section-heading h2{font-size:19px}.journey-panel{padding:14px;border-radius:16px}.journey-calendar{grid-template-columns:repeat(4,minmax(0,1fr));gap:7px}.journey-day{min-height:70px}.journey-day small{font-size:7px}.workout-grid{grid-template-columns:1fr 1fr;gap:10px}.workout-art{height:105px;padding:11px}.art-symbol{font-size:82px;right:13px}.workout-info{padding:12px}.workout-info h3{font-size:13px;line-height:1.25}.workout-info p{font-size:9px;min-height:44px}.workout-meta{font-size:8px}.card-action{font-size:9px}.page-heading h1{font-size:31px}.page-heading p{font-size:11px}.bottom-note{font-size:9px;padding:13px}.note-right{font-size:6px}.mobile-nav{display:flex;position:fixed;bottom:0;left:0;right:0;z-index:10;justify-content:space-around;padding:9px 4px calc(9px + env(safe-area-inset-bottom));box-shadow:0 -8px 24px #211a261c}.mobile-link{display:flex;flex-direction:column;align-items:center;gap:4px;border:0;background:none;font-size:8px;min-width:52px}.mobile-link.active{font-weight:800}.modal-backdrop{padding:10px}.workout-modal,.settings-modal{max-height:92vh;overflow:auto;padding:17px;border-radius:18px}
+}
+@media(min-width:701px) and (max-width:900px){.sidebar{width:210px;padding:25px 15px}.main-area{margin-left:210px}.content{padding-left:4%;padding-right:4%}.workout-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
