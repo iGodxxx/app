@@ -136,58 +136,100 @@ export function App() {
 function ExerciseDemo({name}:{name:string}) {
   const normalized = name.toLocaleLowerCase("pt-BR");
   const video = /ponte de glúteos|elevação pélvica/.test(normalized)
-    ? {
-        src: "https://videos.pexels.com/video-files/6525487/6525487-hd_1920_1080_25fps.mp4",
-        label: "Demonstração real: ponte de glúteos",
-        credit: "Polina Tankilevitch",
-        source: "https://www.pexels.com/video/woman-doing-glute-bridge-exercise-6525487/",
-      }
+    ? { src: "https://videos.pexels.com/video-files/6525487/6525487-hd_1920_1080_25fps.mp4", label: "Ponte de glúteos", credit: "Polina Tankilevitch", source: "https://www.pexels.com/video/woman-doing-glute-bridge-exercise-6525487/" }
     : /prancha baixa/.test(normalized)
-    ? {
-        src: "https://videos.pexels.com/video-files/31035751/13265271_1920_1080_25fps.mp4",
-        label: "Demonstração real: prancha",
-        credit: "Aliaksei Masiukevich",
-        source: "https://www.pexels.com/video/woman-performing-plank-exercise-in-gym-31035751/",
-      }
+    ? { src: "https://videos.pexels.com/video-files/31035751/13265271_1920_1080_25fps.mp4", label: "Prancha baixa", credit: "Aliaksei Masiukevich", source: "https://www.pexels.com/video/woman-performing-plank-exercise-in-gym-31035751/" }
     : /flexão inclinada/.test(normalized)
-    ? {
-        src: "https://videos.pexels.com/video-files/6740158/6740158-hd_1920_1080_25fps.mp4",
-        label: "Demonstração real: flexão inclinada com apoio",
-        credit: "Mikhail Nilov",
-        source: "https://www.pexels.com/video/a-woman-exercising-in-the-gym-6740158/",
-      }
+    ? { src: "https://videos.pexels.com/video-files/6740158/6740158-hd_1920_1080_25fps.mp4", label: "Flexão inclinada", credit: "Mikhail Nilov", source: "https://www.pexels.com/video/a-woman-exercising-in-the-gym-6740158/" }
     : null;
+
+  const kind = /ponte|elevação pélvica/.test(normalized) ? "bridge"
+    : /prancha|flexão|push|superman/.test(normalized) ? "floor"
+    : /dead bug|abdominal/.test(normalized) ? "core"
+    : /bird dog|quatro apoios|coice|abdução/.test(normalized) ? "quadruped"
+    : /afundo/.test(normalized) ? "lunge"
+    : /agachamento|sumô/.test(normalized) ? "squat"
+    : /marcha|passo lateral|joelhos/.test(normalized) ? "cardio"
+    : /alongamento|mobilidade|círculos|gato|respiração|desaceleração/.test(normalized) ? "stretch"
+    : "standing";
 
   return (
     <div className="exercise-demo exercise-video-demo">
       <div className="demo-heading">
         <span className="demo-live"><i/> DEMONSTRAÇÃO DO MOVIMENTO</span>
-        <span>{video ? "VÍDEO REAL" : "GUIA DE TREINO"}</span>
+        <span>{video ? "VÍDEO REAL" : "ANIMAÇÃO GUIADA"}</span>
       </div>
       {video ? (
         <>
-          <video
-            className="exercise-real-video"
-            src={video.src}
-            autoPlay
-            loop
-            muted
-            playsInline
-            controls
-            preload="metadata"
-            aria-label={video.label}
-          />
+          <video className="exercise-real-video" src={video.src} autoPlay loop muted playsInline controls preload="metadata" aria-label={video.label} />
           <div className="demo-footer">
             <strong>{video.label}</strong>
             <span>Vídeo por {video.credit} · <a href={video.source} target="_blank" rel="noreferrer">Fonte Pexels</a></span>
           </div>
         </>
       ) : (
-        <div className="exercise-video-placeholder" role="status">
-          <span className="placeholder-play">▶</span>
-          <strong>Vídeo demonstrativo em preparação</strong>
-          <span>Confira as instruções abaixo e execute o movimento sem pressa.</span>
-        </div>
+        <>
+          <div className={`demo-stage demo-stage-${kind}`} role="img" aria-label={`Animação demonstrativa de ${name}`}>
+            <div className="demo-halo"/>
+            <svg className={`demo-visual figure-${kind}`} viewBox="0 0 360 190" aria-hidden="true">
+              <defs>
+                <linearGradient id="skinTone" x1="0" x2="1"><stop offset="0" stopColor="#d99b82"/><stop offset="1" stopColor="#f0c2a5"/></linearGradient>
+                <linearGradient id="outfitPink" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stopColor="#f58ab7"/><stop offset="1" stopColor="#c83e83"/></linearGradient>
+              </defs>
+              <ellipse className="demo-shadow" cx="180" cy="160" rx="100" ry="9"/>
+              <path className="demo-ground" d="M45 160H315"/>
+              <rect className="demo-mat" x="82" y="151" width="196" height="8" rx="4"/>
+              {kind === "bridge" ? (
+                <g className="figure figure-bridge">
+                  <circle className="head" cx="112" cy="119" r="12"/><path className="hair" d="M101 116q4-17 19-9l5 9-8-3-9 4z"/>
+                  <path className="limb" d="M123 128Q153 144 184 132L224 144"/><path className="limb" d="M224 144l22 12m-22-12 8-17"/>
+                  <path className="limb" d="M143 139l-3 17m3-17 16 17"/><path className="arm" d="M119 132l-14 18m14-18 2 18"/>
+                  <path className="torso" d="M124 124q28 8 48 7l13 9q-28 13-62-2z"/>
+                </g>
+              ) : kind === "floor" || kind === "core" ? (
+                <g className="figure figure-floor">
+                  <circle className="head" cx="103" cy="119" r="12"/><path className="hair" d="M92 116q4-17 19-9l5 9-8-3-9 4z"/>
+                  <path className="torso" d="M115 112q34-8 72 3l-5 18q-39 2-68-5z"/>
+                  <path className="limb" d="M180 119l45 12 38 1m-38-1 25-16"/>
+                  <path className="limb" d="M180 125l-18 22-42 2m42-2 30 6"/>
+                  <path className="arm" d="M126 119l-22 19-23 1m23-1 18 10"/>
+                  <path className="arm" d="M137 119l-8 23"/>
+                </g>
+              ) : kind === "quadruped" ? (
+                <g className="figure figure-birddog">
+                  <circle className="head" cx="125" cy="104" r="11"/><path className="hair" d="M115 101q4-15 17-8l5 8-9-2-8 5z"/>
+                  <path className="torso" d="M137 104q28-8 52 2l-4 15q-28 5-49-3z"/>
+                  <path className="limb" d="M151 117l-4 24-17 12m17-12 19 12"/>
+                  <path className="limb" d="M183 114l12 25 17 10m-17-10-2 14"/>
+                  <path className="arm" d="M140 110l-20 23-21 1m21-1 13 15"/>
+                  <path className="arm" d="M180 108l31-15 28-1"/>
+                </g>
+              ) : kind === "squat" || kind === "lunge" ? (
+                <g className={`figure figure-${kind}`}>
+                  <circle className="head" cx="177" cy="42" r="13"/><path className="hair" d="M164 39q4-17 20-9l6 10-10-3-11 5z"/>
+                  <path className="torso" d="M164 57q14-7 27 0l7 44-34 0z"/>
+                  <path className="arm" d="M166 65l-24 24-13 4m48-28 24 23 13 3"/>
+                  <path className="limb" d="M171 99l-20 28-22 8m22-8 18 25h26"/>
+                  <path className="limb" d="M190 99l21 23 22 2m-22-2-9 33h25"/>
+                </g>
+              ) : (
+                <g className={`figure figure-${kind}`}>
+                  <circle className="head" cx="177" cy="37" r="13"/><path className="hair" d="M164 34q4-17 20-9l6 10-10-3-11 5z"/>
+                  <path className="torso" d="M164 52q14-7 27 0l7 48-34 0z"/>
+                  <path className="arm" d="M166 60l-24 28-9 16m48-44 24 28 9 16"/>
+                  <path className="limb" d="M171 98l-8 33-2 27m2-27 16 27"/>
+                  <path className="limb" d="M190 98l9 33 2 27m-2-27-16 27"/>
+                </g>
+              )}
+              <path className="demo-motion-arrow" d={kind === "bridge" ? "M260 137q18-22 0-42m0 0-7 8m7-8 7 8" : kind === "squat" || kind === "lunge" ? "M250 62q17 17 0 34m0 0-7-8m7 8 7-8" : "M260 88q18-16 0-32m0 0-7 8m7-8 7 8"}/>
+            </svg>
+            <span className="demo-step-pill"><span>●</span> MOVIMENTO EM CICLO</span>
+          </div>
+          <div className="demo-footer">
+            <strong>Exemplo visual: {name}</strong>
+            <span>Animação ilustrativa para acompanhar as instruções de execução.</span>
+          </div>
+        </>
       )}
     </div>
   );
