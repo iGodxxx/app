@@ -1,0 +1,19 @@
+{
+  "name": "Calistenia Asiática",
+  "short_name": "Calistenia",
+  "description": "Sua jornada de movimento, treinos e evolução.",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "background_color": "#fffaf8",
+  "theme_color": "#f8edf1",
+  "orientation": "portrait-primary",
+  "icons": [
+    {
+      "src": "/pwa-icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}
