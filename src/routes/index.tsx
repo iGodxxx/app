@@ -64,6 +64,58 @@ export function App() {
   const [days, setDays] = useState("4 dias");
   const [weightKg, setWeightKg] = useState<number | null>(null);
   const [onboarding, setOnboarding] = useState(false);
+  const [installOpen, setInstallOpen] = useState(false);
+  const [installReady, setInstallReady] = useState(false);
+  const [installPlatform, setInstallPlatform] = useState<"ios" | "android" | "desktop">("desktop");
+  const [installEvent, setInstallEvent] = useState<any>(null);
+  useEffect(() => {
+    const ua = navigator.userAgent.toLowerCase();
+    const isIOS = /iphone|ipad|ipod/.test(ua);
+    const isAndroid = /android/.test(ua);
+    setInstallPlatform(isIOS ? "ios" : isAndroid ? "android" : "desktop");
+    const dismissedAt = Number(localStorage.getItem("calistenia-install-dismissed-at") || 0);
+    const standalone = window.matchMedia("(display-mode: standalone)").matches || (navigator as Navigator & {standalone?: boolean}).standalone === true;
+    if (!standalone && Date.now() - dismissedAt > 7 * 24 * 60 * 60 * 1000) {
+      const timer = window.setTimeout(() => setInstallOpen(true), 900);
+      return () => window.clearTimeout(timer);
+    }
+  }, []);
+  useEffect(() => {
+    const onBeforeInstall = (event: Event) => {
+      event.preventDefault();
+      setInstallEvent(event);
+      setInstallReady(true);
+    };
+    const onInstalled = () => {
+      setInstallOpen(false);
+      setInstallReady(false);
+      setInstallEvent(null);
+    };
+    window.addEventListener("beforeinstallprompt", onBeforeInstall);
+    window.addEventListener("appinstalled", onInstalled);
+    if ("serviceWorker" in navigator && window.location.protocol === "https:") {
+      navigator.serviceWorker.register("/sw.js").catch(() => undefined);
+    }
+    return () => {
+      window.removeEventListener("beforeinstallprompt", onBeforeInstall);
+      window.removeEventListener("appinstalled", onInstalled);
+    };
+  }, []);
+  const dismissInstall = () => {
+    localStorage.setItem("calistenia-install-dismissed-at", String(Date.now()));
+    setInstallOpen(false);
+  };
+  const installApp = async () => {
+    if (installEvent) {
+      await installEvent.prompt();
+      await installEvent.userChoice;
+      setInstallEvent(null);
+      setInstallReady(false);
+      setInstallOpen(false);
+    } else {
+      setInstallOpen(false);
+    }
+  };
   useEffect(() => {
     try {
       const saved = localStorage.getItem("calistenia-asiatica-state");
@@ -138,6 +190,7 @@ export function App() {
         </div>
       </main>
       <nav className="mobile-nav">{nav.map(({label, icon: Icon}) => <button key={label} className={tab === label ? "mobile-link active" : "mobile-link"} onClick={() => setTab(label)}><Icon size={19}/><span>{label}</span></button>)}</nav>
+      {installOpen && <div className="install-backdrop" role="dialog" aria-modal="true" aria-labelledby="install-title"><section className="install-modal"><button className="install-close" onClick={dismissInstall} aria-label="Fechar aviso"><X size={19}/></button><div className="install-icon"><Waves size={30}/></div><span className="eyebrow">LEVE SUA JORNADA COM VOCÊ</span><h2 id="install-title">Adicione o app ao seu celular</h2><p>Acesse seus treinos direto pela tela inicial, sem precisar procurar o link no navegador.</p>{installPlatform==="ios"?<div className="install-steps"><strong>No iPhone ou iPad:</strong><span>1. Toque em <b>Compartilhar</b> no Safari.</span><span>2. Escolha <b>Adicionar à Tela de Início</b>.</span><span>3. Confirme em <b>Adicionar</b>.</span></div>:installReady?<div className="install-steps"><strong>Instalação rápida</strong><span>Toque no botão abaixo e confirme a instalação quando o navegador perguntar.</span></div>:<div className="install-steps"><strong>Como adicionar:</strong><span>Abra o menu do navegador (⋮ ou Compartilhar) e escolha <b>Instalar app</b> ou <b>Adicionar à tela inicial</b>.</span></div>}<button className="install-primary" onClick={installApp}>{installReady?"Instalar aplicativo":"Entendi"} <ArrowRight size={16}/></button><button className="install-later" onClick={dismissInstall}>Agora não</button><small>Você pode continuar usando pelo navegador normalmente.</small></section></div>}
       {active && <div className="modal-backdrop"><section className="workout-modal"><div className="modal-head"><span className="eyebrow">SEU TREINO GUIADO</span><button className="icon-button" onClick={() => setActive(null)} aria-label="Fechar"><X size={20}/></button></div><div className="workout-progress"><span style={{width: ((step + 1) / active.exercises.length * 100) + "%"}}/></div><div className="exercise-count">EXERCÍCIO {step + 1} DE {active.exercises.length}</div><ExerciseDemo name={(active.exercises[step] ?? "")} /><h2>{(active.exercises[step] ?? "")}</h2><p className="muted">{exerciseGuidance((active.exercises[step] ?? ""))}</p><p className="safety-hint">Respeite seus limites. Interrompa se sentir dor, tontura ou mal-estar.</p><div className="tip-box"><Sparkles size={18}/><span><strong>Como executar</strong> {exerciseGuidance((active.exercises[step] ?? ""))}<br/><strong>Respiração</strong> Solte o ar durante o esforço e inspire no retorno, sem prender a respiração.</span></div><div className="exercise-prescription"><span><strong>2–3</strong><small>séries</small></span><span><strong>8–12</strong><small>repetições</small></span><span><strong>45s</strong><small>descanso</small></span></div>{weightKg !== null && weightKg >= 30 && weightKg <= 250 ? <div className="calorie-estimate-inline"><Flame size={16}/><span>Faixa estimada: <strong>~{estimateWorkoutCalories(active, Number.parseInt(active.time, 10) || 0, weightKg).min}–{estimateWorkoutCalories(active, Number.parseInt(active.time, 10) || 0, weightKg).max} kcal</strong><small>Varia conforme intensidade e pausas</small></span></div> : <button type="button" className="weight-nudge" onClick={()=>{setActive(null);setTab("Perfil");setOnboarding(true)}}>Informe seu peso no perfil para ver a estimativa de calorias</button>}<div className="modal-actions"><button className="button-secondary" onClick={() => setStep(Math.max(0, step - 1))} disabled={step === 0}>Anterior</button>{step < active.exercises.length - 1 ? <button className="button-primary" onClick={() => setStep(step + 1)}>Próximo exercício <ArrowRight size={17}/></button> : <button className="button-primary" onClick={finish}><Check size={17}/> Concluir treino</button>}</div></section></div>}
       {onboarding && <div className="modal-backdrop"><section className="settings-modal"><div className="modal-head"><span className="eyebrow">AJUSTE SUA JORNADA</span><button className="icon-button" onClick={() => setOnboarding(false)}><X size={20}/></button></div><h2>Seu plano, seu ritmo.</h2><p className="muted">Personalize suas preferências de treino.</p><label>Seu objetivo</label><div className="choice-grid">{["Perder peso","Ganhar massa","Definição","Fortalecimento","Mobilidade"].map(x=><button className={goal===x?"choice chosen":"choice"} onClick={()=>setGoal(x)} key={x}>{x}</button>)}</div><label>Nível atual</label><div className="choice-grid">{["Iniciante","Intermediário","Avançado"].map(x=><button className={level===x?"choice chosen":"choice"} onClick={()=>setLevel(x)} key={x}>{x}</button>)}</div><label>Disponibilidade semanal</label><div className="choice-grid">{["2 dias","3 dias","4 dias","5 dias"].map(x=><button className={days===x?"choice chosen":"choice"} onClick={()=>setDays(x)} key={x}>{x}</button>)}</div><label htmlFor="weight-kg">Peso corporal (kg)</label><input id="weight-kg" className="weight-input" type="number" min="30" max="250" step="0.1" placeholder="Ex.: 65" value={weightKg ?? ""} onChange={e=>{const value=e.target.value;setWeightKg(value===""?null:Number(value))}} onBlur={e=>{const value=e.currentTarget.valueAsNumber;setWeightKg(Number.isFinite(value)&&value>=30&&value<=250?value:null)}}/><small className="weight-help">Usamos esse dado somente para estimar o gasto calórico.</small><button className="button-primary full" onClick={()=>setOnboarding(false)}>Salvar preferências <Check size={17}/></button></section></div>}
     </div>
@@ -402,11 +455,21 @@ function HomePage({done,history,start,setTab,unlockedDay,completedDays,nextUnloc
   const calorieRange = weightKg !== null && weightKg >= 30 && weightKg <= 250
     ? estimateWorkoutCalories(todayWorkout, Number.parseInt(todayWorkout.time, 10) || 0, weightKg)
     : null;
-  return <><div className="welcome-row"><div><span className="eyebrow">SUA JORNADA COMEÇA NO SEU RITMO</span><h1>Olá, que bom ter você <em>por aqui.</em></h1><p>Um treino por dia. Cada etapa libera a próxima no seu tempo.</p></div><div className="welcome-flower">✿</div></div>
-    <section className="hero-card"><div className="hero-copy"><span className="hero-tag"><Sparkles size={14}/> DIA {current} DA SUA JORNADA</span><h2>Um pouco melhor<br/>a cada movimento.</h2><p>{nextUnlockAt ? "Seu próximo treino será liberado 24 horas após a conclusão do último." : "Seu treino de hoje está pronto. Vamos começar?"}</p><button className="button-light" disabled={completedDays.includes(current)} onClick={()=>start(dayWorkout(current),current)}>{completedDays.includes(current)?"Aguardando próxima liberação":"Começar treino"} <ArrowRight size={17}/></button></div><div className="hero-illustration"><div className="sun-disc"/><div className="hero-person">♀</div><span className="hero-caption">FORÇA • EQUILÍBRIO • VOCÊ</span></div></section>
+  const recentSessions = [...history].slice(-3).reverse();
+  const quickPicks = [workouts[8], workouts[2], workouts[4]];
+  const weekProgress = Math.min(100, Math.round(completedDays.length / 21 * 100));
+  const tips = ["Faça os movimentos com controle e respire sem prender o ar.","Um copo de água e alguns minutos de mobilidade podem ajudar a preparar seu corpo.","Respeite suas pausas: recuperação também faz parte da evolução."];
+  const tip = tips[new Date().getDate() % tips.length];
+  return <>
+    <div className="welcome-row"><div><span className="eyebrow">SUA JORNADA COMEÇA NO SEU RITMO</span><h1>Olá, que bom ter você <em>por aqui.</em></h1><p>Um treino por dia. Cada etapa libera a próxima no seu tempo.</p></div><div className="welcome-flower">✿</div></div>
+    <section className="hero-card"><div className="hero-copy"><span className="hero-tag"><Sparkles size={14}/> DIA {current} DA SUA JORNADA</span><h2>Um pouco melhor<br/>a cada movimento.</h2><p>{nextUnlockAt ? "Seu próximo treino será liberado 24 horas após a conclusão do último." : "Seu treino de hoje está pronto. Vamos começar?"}</p><button className="button-light" disabled={completedDays.includes(current)} onClick={()=>start(todayWorkout,current)}>{completedDays.includes(current)?"Aguardando próxima liberação":"Começar treino"} <ArrowRight size={17}/></button></div><div className="hero-illustration"><div className="sun-disc"/><div className="hero-person">♀</div><span className="hero-caption">FORÇA • EQUILÍBRIO • VOCÊ</span></div></section>
     <section className="home-calorie-card"><div className="home-calorie-icon"><Flame size={23}/></div><div className="home-calorie-copy"><span className="eyebrow">GASTO CALÓRICO ESTIMADO</span><strong>{calorieRange ? `~${calorieRange.min}–${calorieRange.max} kcal` : "Personalize sua estimativa"}</strong><p>{calorieRange ? `${todayWorkout.title} · ${todayWorkout.time} · Faixa aproximada conforme intensidade` : "Informe seu peso corporal no perfil para calcular uma faixa para o treino de hoje."}</p></div><button className="home-calorie-action" onClick={()=>setTab(calorieRange ? "Treinos" : "Perfil")}>{calorieRange ? "Ver treino" : "Informar peso"} <ArrowRight size={15}/></button></section>
     <div className="stats-grid"><Stat icon={Flame} label="Sua jornada" value={totalSessions ? totalSessions + " treinos" : "Comece hoje"} note="Continue assim!"/><Stat icon={Clock3} label="Tempo em movimento" value={totalMinutes + " min"} note="Cada minuto conta"/><Stat icon={Award} label="Dias concluídos" value={String(completedDays.length)} note="Sua evolução começa aqui"/></div>
-    <div className="section-heading"><div><span className="eyebrow">SEU CALENDÁRIO</span><h2>Jornada de 21 dias</h2><p className="journey-date-range">17 NOV — 07 DEZ 2026</p></div><button className="text-link" onClick={()=>setTab("Treinos")}>Ver calendário <ArrowRight size={16}/></button></div>
+    <section className="home-progress-panel"><div className="home-progress-head"><div><span className="eyebrow">SEU PROGRESSO</span><h2>Você está construindo constância</h2><p>{completedDays.length} de 21 etapas concluídas</p></div><strong>{weekProgress}%</strong></div><div className="home-progress-track"><span style={{width:weekProgress+"%"}}/></div><div className="home-progress-foot"><span>Começo</span><span>Jornada de 21 dias</span><span>Conclusão</span></div></section>
+    <section className="home-shortcuts"><div className="section-heading"><div><span className="eyebrow">EXPLORE SEU APP</span><h2>O que você quer fazer agora?</h2></div></div><div className="home-shortcut-grid"><button onClick={()=>setTab("Treinos")}><span className="shortcut-icon rose"><Dumbbell size={20}/></span><strong>Encontrar treino</strong><small>Escolha uma rotina</small><ArrowRight size={15}/></button><button onClick={()=>setTab("Alimentação")}><span className="shortcut-icon sage"><Utensils size={20}/></span><strong>Ver receitas</strong><small>Ideias para suas refeições</small><ArrowRight size={15}/></button><button onClick={()=>setTab("Bônus")}><span className="shortcut-icon lilac"><Gift size={20}/></span><strong>Meus bônus</strong><small>Conteúdos especiais</small><ArrowRight size={15}/></button><button onClick={()=>setTab("Evolução")}><span className="shortcut-icon peach"><BarChart3 size={20}/></span><strong>Acompanhar evolução</strong><small>Veja seu histórico</small><ArrowRight size={15}/></button></div></section>
+    <section className="home-quick-workouts"><div className="section-heading"><div><span className="eyebrow">PARA COMEÇAR AGORA</span><h2>Treinos rápidos</h2><p>Opções práticas para encaixar no seu dia.</p></div><button className="text-link" onClick={()=>setTab("Treinos")}>Ver todos <ArrowRight size={15}/></button></div><div className="home-quick-grid">{quickPicks.map(workout=><article key={workout.title}><span>{workout.focus}</span><h3>{workout.title}</h3><p><Clock3 size={14}/>{workout.time} · {workout.level}</p><button onClick={()=>start(workout)}>Começar <ArrowRight size={14}/></button></article>)}</div></section>
+    <section className="home-lower-grid"><div className="home-tip-card"><div className="home-tip-icon"><Leaf size={21}/></div><span className="eyebrow">LEMBRETE DO DIA</span><h3>Seu corpo não precisa de pressa.</h3><p>{tip}</p></div><div className="home-recent-card"><div className="section-heading"><div><span className="eyebrow">SEU HISTÓRICO</span><h2>Atividade recente</h2></div><button className="text-link" onClick={()=>setTab("Evolução")}>Ver tudo</button></div>{recentSessions.length?recentSessions.map(session=><div className="home-recent-row" key={session.id}><span><Check size={15}/></span><div><strong>{session.title}</strong><small>{session.duration} min · {new Date(session.completedAt).toLocaleDateString("pt-BR")}</small></div></div>):<p className="home-empty-recent">Seus treinos concluídos vão aparecer aqui. Que tal começar pelo treino de hoje?</p>}</div></section>
+    <div className="section-heading"><div><span className="eyebrow">SEU CALENDÁRIO</span><h2>Jornada de 21 dias</h2><p className="journey-date-range">17 NOV — 07 DEZ 2026</p></div><button className="text-link" onClick={()=>setTab("Jornada")}>Ver jornada <ArrowRight size={16}/></button></div>
     <JourneyCalendar unlockedDay={unlockedDay} completedDays={completedDays} nextUnlockAt={nextUnlockAt} dayWorkout={dayWorkout} start={start}/>
     <div className="bottom-note"><Heart size={18}/><span>Não precisa ser perfeito. Só precisa ser seu.</span><span className="note-right">UM DIA DE CADA VEZ</span></div>
   </>;
