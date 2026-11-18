@@ -23,6 +23,7 @@ export const Route = createFileRoute("/")({
 
 type Tab = "Início" | "Jornada" | "Treinos" | "Alimentação" | "Bônus" | "Evolução" | "Perfil";
 type Workout = { title: string; level: string; time: string; focus: string; color: string; description: string; exercises: string[] };
+type BeforeInstallPromptEvent = Event & { prompt: () => Promise<void>; userChoice: Promise<{ outcome: "accepted" | "dismissed"; platform: string }> };
 type WorkoutSession = { id: string; title: string; completedAt: string; duration: number; calories?: number; caloriesMin?: number; caloriesMax?: number; weightKg?: number; isExtra?: boolean };
 
 const workouts: Workout[] = [
@@ -67,7 +68,7 @@ export function App() {
   const [installOpen, setInstallOpen] = useState(false);
   const [installReady, setInstallReady] = useState(false);
   const [installPlatform, setInstallPlatform] = useState<"ios" | "android" | "desktop">("desktop");
-  const [installEvent, setInstallEvent] = useState<any>(null);
+  const [installEvent, setInstallEvent] = useState<BeforeInstallPromptEvent | null>(null);
   useEffect(() => {
     const ua = navigator.userAgent.toLowerCase();
     const isIOS = /iphone|ipad|ipod/.test(ua);
@@ -83,7 +84,7 @@ export function App() {
   useEffect(() => {
     const onBeforeInstall = (event: Event) => {
       event.preventDefault();
-      setInstallEvent(event);
+      setInstallEvent(event as BeforeInstallPromptEvent);
       setInstallReady(true);
     };
     const onInstalled = () => {
@@ -180,7 +181,7 @@ export function App() {
       <main className="main-area">
         <header className="topbar"><div className="mobile-brand">✿ calisteniaasiática</div><div className="breadcrumb">Sua jornada <span>/</span> {tab}</div><div className="top-actions"><span className="streak"><Flame size={16}/> {done.length} treinos</span><button className="icon-button" aria-label="Perfil" onClick={() => setTab("Perfil")}><UserRound size={19}/></button></div></header>
         <div className="content">
-          {tab === "Início" && <HomePage done={done} history={history} start={start} setTab={setTab} unlockedDay={unlockedDay} completedDays={completedDays} nextUnlockAt={nextUnlockAt} dayWorkout={dayWorkout} weightKg={weightKg} />}
+          {tab === "Início" && <HomePage done={done} history={history} start={start} startExtra={startExtra} setTab={setTab} unlockedDay={unlockedDay} completedDays={completedDays} nextUnlockAt={nextUnlockAt} dayWorkout={dayWorkout} weightKg={weightKg} />}
           {tab === "Treinos" && <WorkoutPage items={filtered} query={query} setQuery={setQuery} start={start} unlockedDay={unlockedDay} completedDays={completedDays} nextUnlockAt={nextUnlockAt} dayWorkout={dayWorkout} />}
           {tab === "Jornada" && <JourneyPage setTab={setTab} start={start} startExtra={startExtra} unlockedDay={unlockedDay} completedDays={completedDays} nextUnlockAt={nextUnlockAt} dayWorkout={dayWorkout} history={history} weightKg={weightKg} />}
           {tab === "Alimentação" && <FoodPage />}
@@ -447,7 +448,7 @@ function exerciseGuidance(name: string) {
 
 function PageHeading({kicker,title,description}:{kicker:string;title:string;description:string}) { return <div className="page-heading"><span className="eyebrow">{kicker}</span><h1>{title}</h1><p>{description}</p></div>; }
 
-function HomePage({done,history,start,setTab,unlockedDay,completedDays,nextUnlockAt,dayWorkout,weightKg}:{done:string[];history:WorkoutSession[];start:(w:Workout,day?:number)=>void;setTab:(t:Tab)=>void;unlockedDay:number;completedDays:number[];nextUnlockAt:string|null;dayWorkout:(day:number)=>Workout;weightKg:number|null}) {
+function HomePage({done,history,start,startExtra,setTab,unlockedDay,completedDays,nextUnlockAt,dayWorkout,weightKg}:{done:string[];history:WorkoutSession[];start:(w:Workout,day?:number)=>void;startExtra:(w:Workout)=>void;setTab:(t:Tab)=>void;unlockedDay:number;completedDays:number[];nextUnlockAt:string|null;dayWorkout:(day:number)=>Workout;weightKg:number|null}) {
   const totalSessions = history.length || done.length;
   const totalMinutes = history.length ? history.reduce((sum, session) => sum + session.duration, 0) : done.length * 18;
   const current = unlockedDay;
@@ -467,7 +468,7 @@ function HomePage({done,history,start,setTab,unlockedDay,completedDays,nextUnloc
     <div className="stats-grid"><Stat icon={Flame} label="Sua jornada" value={totalSessions ? totalSessions + " treinos" : "Comece hoje"} note="Continue assim!"/><Stat icon={Clock3} label="Tempo em movimento" value={totalMinutes + " min"} note="Cada minuto conta"/><Stat icon={Award} label="Dias concluídos" value={String(completedDays.length)} note="Sua evolução começa aqui"/></div>
     <section className="home-progress-panel"><div className="home-progress-head"><div><span className="eyebrow">SEU PROGRESSO</span><h2>Você está construindo constância</h2><p>{completedDays.length} de 21 etapas concluídas</p></div><strong>{weekProgress}%</strong></div><div className="home-progress-track"><span style={{width:weekProgress+"%"}}/></div><div className="home-progress-foot"><span>Começo</span><span>Jornada de 21 dias</span><span>Conclusão</span></div></section>
     <section className="home-shortcuts"><div className="section-heading"><div><span className="eyebrow">EXPLORE SEU APP</span><h2>O que você quer fazer agora?</h2></div></div><div className="home-shortcut-grid"><button onClick={()=>setTab("Treinos")}><span className="shortcut-icon rose"><Dumbbell size={20}/></span><strong>Encontrar treino</strong><small>Escolha uma rotina</small><ArrowRight size={15}/></button><button onClick={()=>setTab("Alimentação")}><span className="shortcut-icon sage"><Utensils size={20}/></span><strong>Ver receitas</strong><small>Ideias para suas refeições</small><ArrowRight size={15}/></button><button onClick={()=>setTab("Bônus")}><span className="shortcut-icon lilac"><Gift size={20}/></span><strong>Meus bônus</strong><small>Conteúdos especiais</small><ArrowRight size={15}/></button><button onClick={()=>setTab("Evolução")}><span className="shortcut-icon peach"><BarChart3 size={20}/></span><strong>Acompanhar evolução</strong><small>Veja seu histórico</small><ArrowRight size={15}/></button></div></section>
-    <section className="home-quick-workouts"><div className="section-heading"><div><span className="eyebrow">PARA COMEÇAR AGORA</span><h2>Treinos rápidos</h2><p>Opções práticas para encaixar no seu dia.</p></div><button className="text-link" onClick={()=>setTab("Treinos")}>Ver todos <ArrowRight size={15}/></button></div><div className="home-quick-grid">{quickPicks.map(workout=><article key={workout.title}><span>{workout.focus}</span><h3>{workout.title}</h3><p><Clock3 size={14}/>{workout.time} · {workout.level}</p><button onClick={()=>start(workout)}>Começar <ArrowRight size={14}/></button></article>)}</div></section>
+    <section className="home-quick-workouts"><div className="section-heading"><div><span className="eyebrow">PARA COMEÇAR AGORA</span><h2>Treinos rápidos</h2><p>Opções práticas para encaixar no seu dia.</p></div><button className="text-link" onClick={()=>setTab("Treinos")}>Ver todos <ArrowRight size={15}/></button></div><div className="home-quick-grid">{quickPicks.map(workout=><article key={workout.title}><span>{workout.focus}</span><h3>{workout.title}</h3><p><Clock3 size={14}/>{workout.time} · {workout.level}</p><button onClick={()=>startExtra(workout)}>Começar <ArrowRight size={14}/></button></article>)}</div></section>
     <section className="home-lower-grid"><div className="home-tip-card"><div className="home-tip-icon"><Leaf size={21}/></div><span className="eyebrow">LEMBRETE DO DIA</span><h3>Seu corpo não precisa de pressa.</h3><p>{tip}</p></div><div className="home-recent-card"><div className="section-heading"><div><span className="eyebrow">SEU HISTÓRICO</span><h2>Atividade recente</h2></div><button className="text-link" onClick={()=>setTab("Evolução")}>Ver tudo</button></div>{recentSessions.length?recentSessions.map(session=><div className="home-recent-row" key={session.id}><span><Check size={15}/></span><div><strong>{session.title}</strong><small>{session.duration} min · {new Date(session.completedAt).toLocaleDateString("pt-BR")}</small></div></div>):<p className="home-empty-recent">Seus treinos concluídos vão aparecer aqui. Que tal começar pelo treino de hoje?</p>}</div></section>
     <div className="section-heading"><div><span className="eyebrow">SEU CALENDÁRIO</span><h2>Jornada de 21 dias</h2><p className="journey-date-range">17 NOV — 07 DEZ 2026</p></div><button className="text-link" onClick={()=>setTab("Jornada")}>Ver jornada <ArrowRight size={16}/></button></div>
     <JourneyCalendar unlockedDay={unlockedDay} completedDays={completedDays} nextUnlockAt={nextUnlockAt} dayWorkout={dayWorkout} start={start}/>
